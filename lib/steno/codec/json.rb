@@ -26,6 +26,9 @@ class Steno::Codec::Json < Steno::Codec::Base
       "thread_id"  => record.thread_id,
       "fiber_id"   => record.fiber_id,
       "process_id" => record.process_id,
+      "file"       => record.file,
+      "lineno"     => record.lineno,
+      "method"     => record.method,
     }
 
     Yajl::Encoder.encode(h) + "\n"
