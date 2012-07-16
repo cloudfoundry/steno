@@ -78,11 +78,11 @@ class Steno::Logger
 
   # Sets the minimum level for which records will be added to sinks.
   #
-  # @param [Symbol] name  The level name
+  # @param [Symbol] level_name  The level name
   #
   # @return [nil]
-  def level=(name)
-    level = self.class.lookup_level(name)
+  def level=(level_name)
+    level = self.class.lookup_level(level_name)
 
     @min_level_lock.synchronize { @min_level = level }
 
@@ -99,11 +99,11 @@ class Steno::Logger
   # Returns whether or not records for the given level would be forwarded to
   # sinks.
   #
-  # @param [Symbol] name
+  # @param [Symbol] level_name
   #
   # @return [true || false]
-  def level_active?(name)
-    level = self.class.lookup_level(name)
+  def level_active?(level_name)
+    level = self.class.lookup_level(level_name)
 
     @min_level_lock.synchronize { level <= @min_level }
   end
@@ -119,15 +119,15 @@ class Steno::Logger
 
   # Adds a record to the configured sinks.
   #
-  # @param [Symbol] name    The level associated with the record
+  # @param [Symbol] level_name    The level associated with the record
   # @param [String] message
   # @param [Hash] user_data
   #
   # @return [nil]
-  def log(name, message = nil, user_data = nil, &blk)
-    return unless level_active?(name)
+  def log(level_name, message = nil, user_data = nil, &blk)
+    return unless level_active?(level_name)
 
-    level = self.class.lookup_level(name)
+    level = self.class.lookup_level(level_name)
 
     message = yield if block_given?
 
