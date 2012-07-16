@@ -14,4 +14,8 @@ describe Steno::Record do
   it "should set the fiber id(if available)", :needs_fibers => true do
     record.fiber_id.should == Fiber.current.object_id
   end
+
+  it "should set the source" do
+    record.source.should == "test"
+  end
 end

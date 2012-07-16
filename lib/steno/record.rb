@@ -18,15 +18,15 @@ class Steno::Record
   attr_reader :lineno
   attr_reader :method
 
-  # @param [String] source_id  Identifies message source.
+  # @param [String] source  Identifies message source.
   # @param [Symbol] log_level
   # @param [String] message
   # @param [Array]  loc        Location where the record was generated.
   #        Format is [<filename>, <lineno>, <method>].
   # @param [Hash]   data       User-supplied data
-  def initialize(source_id, log_level, message, loc = [], data = {})
+  def initialize(source, log_level, message, loc = [], data = {})
     @timestamp  = Time.now
-    @source_id  = source_id
+    @source     = source
     @log_level  = log_level
     @message    = message
     @data       = {}.merge(data)
