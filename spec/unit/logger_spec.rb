@@ -80,4 +80,12 @@ describe Steno::Logger do
       logger.debugf("test %d %0.2f", 1, 2.2)
     end
   end
+
+  describe "#tag" do
+    it "should return a tagged logger" do
+      tagged_logger = logger.tag("foo" => "bar")
+      tagged_logger.should_not be_nil
+      tagged_logger.user_data.should == { "foo" => "bar" }
+    end
+  end
 end

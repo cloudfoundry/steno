@@ -134,13 +134,23 @@ class Steno::Logger
     callstack = caller
     loc = parse_record_loc(callstack)
 
-    data = @context.data.update(user_data || {})
+    data = @context.data.merge(user_data || {})
 
     record = Steno::Record.new(@name, level, message, loc, data)
 
     @sinks.each { |sink| sink.add_record(record) }
 
     nil
+  end
+
+  # Returns a proxy that will emit the supplied user data along with each
+  # log record.
+  #
+  # @param [Hash] user_data
+  #
+  # @return [Steno::TaggedLogger]
+  def tag(user_data = {})
+    Steno::TaggedLogger.new(self, user_data)
   end
 
   private
