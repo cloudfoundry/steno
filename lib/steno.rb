@@ -128,3 +128,7 @@ module Steno
     end
   end
 end
+
+# Initialize with an empty config. All log records will swallowed until Steno
+# is re-initialized with sinks.
+Steno.init(Steno::Config.new)
