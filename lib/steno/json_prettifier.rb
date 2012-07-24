@@ -41,7 +41,7 @@ class Steno::JsonPrettifier
               "pid=%s" % [record["process_id"] || "-"],
               "tid=%s" % [shortid(record["thread_id"])],
               "fid=%s" % [shortid(record["fiber_id"])],
-              "%s/%s:%s" % [record["file"]   || "-",
+              "%s/%s:%s" % [trim_filename(record["file"]),
                             record["method"] || "-",
                             record["lineno"] || "-"],
               format_data(record["data"]),
@@ -50,6 +50,18 @@ class Steno::JsonPrettifier
               record["message"] || "-"]
 
     fields.join(" ") + "\n"
+  end
+
+  def trim_filename(path)
+    return "-" if path.nil?
+
+    parts = path.split("/")
+
+    if parts.size == 1
+      parts[0]
+    else
+      parts.slice(-2, 2).join("/")
+    end
   end
 
   def format_data(data = {})
