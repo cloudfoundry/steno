@@ -8,8 +8,13 @@ end
 describe Class do
   describe "#logger" do
     it "should request a logger named after the class" do
-      Steno.should_receive(:logger).with("Foo::Bar")
+      expect do
+        Foo::Bar.logger
+      end.to raise_error(/undefined/)
+
+      require "steno/core_ext"
       x = Foo::Bar.logger
+      x.should_not be_nil
     end
   end
 end
