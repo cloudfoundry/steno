@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../../Gemfile", __FILE__)
+
+require "bundler"
+Bundler.setup
+
+require "optparse"
+require "yajl"
+
+require "steno/json_prettifier"
+
+def prettify_io(io, prettifier)
+  lineno = 0
+  io.each_line do |line|
+    begin
+      prettified = prettifier.prettify_line(line)
+      print line
+    rescue Yajl::ParseError => e
+      STDERR.puts "steno-prettify: Malformed json at line #{lineno}, '#{line.strip}'"
+    end
+
+    lineno += 1
+  end
+end
+
+def prettify_file(path, prettifier)
+  begin
+    f = File.open(path, "r")
+  rescue => e
+    STDERR.puts "steno-prettify: Failed opening '#{path}', #{e}"
+    return
+  end
+
+  prettify_io(f, prettifier)
+
+ensure
+  f.close if f
+end
+
+option_parser = OptionParser.new do |op|
+  op.banner =<<EOT
+Usage: steno-prettify [OPTS] [FILE...]
+
+Parses json formatted log lines from FILE(s), or stdin,
+and displays a more human friendly version of each line to stdout.
+
+Examples (shamelessly stolen from `man cat`):
+
+  steno-prettify f - g
+    Prettify f's contents, then standard input, then g's contents.
+
+  steno-prettify
+    Prettify contents of stdin.
+
+Options:
+EOT
+
+  op.on("-h", "--help", "Display help") do
+    puts op
+    exit
+  end
+end
+
+option_parser.parse!(ARGV)
+
+STDOUT.sync = true
+prettifier = Steno::JsonPrettifier.new
+
+inputs = ARGV.dup
+inputs << "-" if inputs.empty?
+
+inputs.each do |path|
+  if path == "-"
+    prettify_io(STDIN, prettifier)
+  else
+    prettify_file(path, prettifier)
+  end
+end
+
