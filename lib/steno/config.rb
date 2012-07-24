@@ -10,12 +10,25 @@ end
 
 class Steno::Config
   class << self
+    # Creates a config given a yaml file of the following form:
+    #
+    #     logging:
+    #       level:  <info, debug, etc>
+    #       file:   </path/to/logfile>
+    #       syslog: <syslog name>
+    #
+    # @param [String] path  Path to yaml config
+    # @param [Hash] overrides
+    #
+    # @return [Steno::Config]
     def from_file(path, overrides = {})
       h = YAML.load_file(path)
 
+      h = h["logging"] || {}
+
       opts = {
         :sinks => [],
-        :default_log_level => h["level"].to_sym,
+        :default_log_level => h["level"].nil? ? :info : h["level"].to_sym,
       }
 
       if h["file"]
