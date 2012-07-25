@@ -1,4 +1,5 @@
 require "digest/md5"
+require "set"
 require "yajl"
 
 module Steno
@@ -6,11 +7,12 @@ end
 
 # Transforms JSON log lines into a more human readable format
 class Steno::JsonPrettifier
+  FIELD_ORDER = %w[timestamp source process_id thread_id fiber_id location data
+                   log_level message]
 
-  attr_reader :time_format
-
-  def initialize
+  def initialize(excluded_fields = [])
     @time_format = "%Y-%m-%d %H:%M:%S.%6N"
+    @excluded_fields = Set.new(excluded_fields)
   end
 
   def prettify_line(line)
@@ -19,55 +21,79 @@ class Steno::JsonPrettifier
     format_record(json_record)
   end
 
-  private
+  protected
 
   def format_record(record)
-    timestamp = nil
-    if record.has_key?("timestamp")
-      timestamp = Time.at(record["timestamp"]).strftime(@time_format)
-    else
-      timestamp = "-"
-    end
+    fields = []
 
-    log_level = nil
-    if record.has_key?("log_level")
-      log_level = record["log_level"].upcase
-    else
-      log_level = "-"
-    end
+    FIELD_ORDER.each do |field_name|
+      next if @excluded_fields.include?(field_name)
 
-    fields = [timestamp,
-              record["source"] || "-",
-              "pid=%s" % [record["process_id"] || "-"],
-              "tid=%s" % [shortid(record["thread_id"])],
-              "fid=%s" % [shortid(record["fiber_id"])],
-              "%s/%s:%s" % [trim_filename(record["file"]),
-                            record["method"] || "-",
-                            record["lineno"] || "-"],
-              format_data(record["data"]),
-              "%7s" % [log_level],
-              "--",
-              record["message"] || "-"]
+      exists = nil
+      pred_meth = "check_#{field_name}".to_sym
+      if respond_to?(pred_meth)
+        exists = send(pred_meth, record)
+      else
+        exists = record.has_key?(field_name)
+      end
+
+      if exists
+        fields << send("format_#{field_name}".to_sym, record)
+      else
+        fields << "-"
+      end
+    end
 
     fields.join(" ") + "\n"
   end
 
-  def trim_filename(path)
-    return "-" if path.nil?
-
-    parts = path.split("/")
-
-    if parts.size == 1
-      parts[0]
-    else
-      parts.slice(-2, 2).join("/")
-    end
+  def format_timestamp(record)
+    Time.at(record["timestamp"]).strftime(@time_format)
   end
 
-  def format_data(data = {})
-    return "-" if data.empty?
+  def format_source(record)
+    "%14s" % record["source"]
+  end
 
-    data.map { |k, v| "#{k}=#{v}" }.join(",")
+  def format_process_id(record)
+    "pid=%-5s" % [record["process_id"]]
+  end
+
+  def format_thread_id(record)
+    "tid=%s" % [shortid(record["thread_id"])]
+  end
+
+  def format_fiber_id(record)
+    "fid=%s" % [shortid(record["fiber_id"])]
+  end
+
+  def check_location(record)
+    %w[file lineno method].reduce(true) { |ok, k| ok && record.has_key?(k) }
+  end
+
+  def format_location(record)
+    parts = record["file"].split("/")
+
+    trimmed_filename = nil
+    if parts.size == 1
+      trimmed_filename = parts[0]
+    else
+      trimmed_filename = parts.slice(-2, 2).join("/")
+    end
+
+    "%s/%s:%s" % [trimmed_filename, record["method"], record["lineno"]]
+  end
+
+  def format_data(record)
+    record["data"].map { |k, v| "#{k}=#{v}" }.join(",")
+  end
+
+  def format_log_level(record)
+    "%7s" % [record["log_level"].upcase]
+  end
+
+  def format_message(record)
+    "-- %s" % [record["message"]]
   end
 
   def shortid(data)

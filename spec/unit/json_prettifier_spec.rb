@@ -21,10 +21,10 @@ describe Steno::JsonPrettifier do
                    'fid=\w{4}',                # Fiber shortid
                    'filename\/method:line',    # Location
                    'test=data',                # User supplied data
-                   '\s+INFO',                  # Level
+                   'INFO',                     # Level
                    '--',
                    'message',                  # Log message
-                   ].join(" ") + "\n"
+                   ].join("\s+") + "\n"
       prettified.should match(exp_regex)
     end
   end

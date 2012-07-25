@@ -38,6 +38,8 @@ ensure
   f.close if f
 end
 
+excluded_fields = []
+
 option_parser = OptionParser.new do |op|
   op.banner =<<EOT
 Usage: steno-prettify [OPTS] [FILE...]
@@ -60,12 +62,16 @@ EOT
     puts op
     exit
   end
+
+  op.on("-a", "--align", "Omit location and data in order to provide well-aligned logs") do
+    excluded_fields = %w[location data]
+  end
 end
 
 option_parser.parse!(ARGV)
 
 STDOUT.sync = true
-prettifier = Steno::JsonPrettifier.new
+prettifier = Steno::JsonPrettifier.new(excluded_fields)
 
 inputs = ARGV.dup
 inputs << "-" if inputs.empty?
