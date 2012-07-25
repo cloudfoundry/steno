@@ -10,6 +10,8 @@ require "yajl"
 
 require "steno/json_prettifier"
 
+Signal.trap("INT") { exit }
+
 def prettify_io(io, prettifier)
   lineno = 0
   io.each_line do |line|
