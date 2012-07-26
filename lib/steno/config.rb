@@ -23,28 +23,49 @@ class Steno::Config
     # @return [Steno::Config]
     def from_file(path, overrides = {})
       h = YAML.load_file(path)
-
       h = h["logging"] || {}
+      new(to_config_hash(h).merge(overrides))
+    end
 
+    def from_hash(hash)
+      new(to_config_hash(hash))
+    end
+
+    def to_config_hash(hash)
+      hash ||= {}
+      hash = symbolize_keys(hash)
+
+      level = hash[:level] || hash[:default_log_level]
       opts = {
         :sinks => [],
-        :default_log_level => h["level"].nil? ? :info : h["level"].to_sym,
+        :default_log_level => level.nil? ? :info : level.to_sym
       }
 
-      if h["file"]
-        opts[:sinks] << Steno::Sink::IO.for_file(h["file"])
+      if hash[:file]
+        opts[:sinks] << Steno::Sink::IO.for_file(hash[:file])
       end
 
-      if h["syslog"]
-        Steno::Sink::Syslog.instance.open(h["syslog"])
+      if hash[:syslog]
+        Steno::Sink::Syslog.instance.open(hash[:syslog])
         opts[:sinks] << Steno::Sink::Syslog.instance
       end
 
-      if opts[:sinks].empty?
-        opts[:sinks] << Steno::Sink::IO.new(STDOUT)
+      opts[:sinks] << Steno::Sink::IO.new(STDOUT) if opts[:sinks].empty?
+      opts
+    end
+
+    def symbolize_keys(hash)
+      hash ||= {}
+      symbolized = {}
+      hash.each_key do |key|
+        if !key.is_a? Symbol
+          symbolized[key.to_sym] = hash[key]
+        else
+          symbolized[key] = hash[key]
+        end
       end
 
-      new(opts.merge(overrides))
+      symbolized
     end
   end
 
@@ -66,4 +87,6 @@ class Steno::Config
       @default_log_level = :info
     end
   end
+
+  private_class_method :to_config_hash, :symbolize_keys
 end
