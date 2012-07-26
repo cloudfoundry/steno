@@ -4,6 +4,52 @@ require "yaml"
 require "spec_helper"
 
 describe Steno::Config do
+  describe ".from_hash" do
+    before :each do
+      @log_path = "some_file"
+
+      @mock_sink_file = mock("sink")
+      @mock_sink_file.stub(:codec=)
+      Steno::Sink::IO.should_receive(:for_file).with(@log_path)
+        .and_return(@mock_sink_file)
+
+      @mock_sink_syslog = mock("sink")
+      @mock_sink_syslog.stub(:codec=)
+      @mock_sink_syslog.should_receive(:open).with("test")
+      Steno::Sink::Syslog.should_receive(:instance).twice()
+        .and_return(@mock_sink_syslog)
+    end
+
+    after :each do
+      @config = Steno::Config.from_hash(@hash)
+
+      @config.default_log_level.should == :debug2
+      @config.context.should.class == Steno::Context::Null
+      @config.codec.should.class == Steno::Codec::Json
+
+      @config.sinks.size.should == 2
+      @config.sinks.should =~ [@mock_sink_file, @mock_sink_syslog]
+    end
+
+    it "should work for symbolized keys" do
+      @hash = {
+        :file => @log_path,
+        :level => "debug2",
+        :default_log_level => "warn",
+        :syslog => "test"
+      }
+    end
+
+    it "should work for non-symbolized keys" do
+      @hash = {
+        "file" => @log_path,
+        "level" => "debug2",
+        "default_log_level" => "warn",
+        "syslog" => "test"
+      }
+    end
+  end
+
   describe ".from_file" do
     before :each do
       @tmpdir = Dir.mktmpdir
@@ -32,7 +78,14 @@ describe Steno::Config do
 
     it "should set the default_log_level if a key with the same name is supplied" do
       write_config(@config_path, { "level" => "debug2" })
+      Steno::Config.from_file(@config_path).default_log_level.should == :debug2
 
+      write_config(@config_path, { "default_log_level" => "debug2" })
+      Steno::Config.from_file(@config_path).default_log_level.should == :debug2
+    end
+
+    it "should read the 'level' key if both default_log_level and level are spscified" do
+      write_config(@config_path, { "level" => "debug2", "default_log_level" => "warn" })
       Steno::Config.from_file(@config_path).default_log_level.should == :debug2
     end
 
