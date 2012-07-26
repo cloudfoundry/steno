@@ -88,5 +88,5 @@ class Steno::Config
     end
   end
 
-  private_class_method :to_config_hash, :symbolize_keys
+  private_class_method :symbolize_keys
 end
