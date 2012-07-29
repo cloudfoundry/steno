@@ -35,4 +35,7 @@ class Steno::Sink::Syslog < Steno::Sink::Base
     @syslog_lock.synchronize { @syslog.log(pri, "%s", msg) }
   end
 
+  def flush
+    nil
+  end
 end

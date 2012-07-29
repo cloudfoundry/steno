@@ -24,4 +24,10 @@ describe Steno::Sink::Syslog do
       sink.add_record(record)
     end
   end
+
+  describe "#flush" do
+    it "should do nothing" do
+      Steno::Sink::Syslog.instance.flush
+    end
+  end
 end
