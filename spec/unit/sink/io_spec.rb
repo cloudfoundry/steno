@@ -1,15 +1,21 @@
 require "spec_helper"
 
 describe Steno::Sink::IO do
-  let(:record) { { :data => "test" } }
+  let(:level) do
+    Steno::Logger.lookup_level(:info)
+  end
+
+  let(:record) do
+    Steno::Record.new("source", level, "message")
+  end
 
   describe "#add_record" do
     it "should encode the record and write it to the underlying io object" do
       codec = mock("codec")
-      codec.should_receive(:encode_record).with(record).and_return(record[:data])
+      codec.should_receive(:encode_record).with(record).and_return(record.message)
 
       io = mock("io")
-      io.should_receive(:write).with(record[:data])
+      io.should_receive(:write).with(record.message)
 
       Steno::Sink::IO.new(io, codec).add_record(record)
     end

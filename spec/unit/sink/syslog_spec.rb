@@ -1,6 +1,14 @@
 require "spec_helper"
 
 describe Steno::Sink::Syslog do
+  let(:level) do
+    Steno::Logger.lookup_level(:info)
+  end
+
+  let(:record) do
+    Steno::Record.new("source", level, "message")
+  end
+
   describe "#add_record" do
     it "should append an encoded record with the correct priority" do
       identity = "test"
@@ -13,13 +21,11 @@ describe Steno::Sink::Syslog do
       sink = Steno::Sink::Syslog.instance
       sink.open(identity)
 
-      record = Steno::Record.new("test", :info, "hello")
-
       codec = mock("codec")
-      codec.should_receive(:encode_record).with(record).and_return("test")
+      codec.should_receive(:encode_record).with(record).and_return(record.message)
       sink.codec = codec
 
-      syslog.should_receive(:log).with(Syslog::LOG_INFO, "%s", "test")
+      syslog.should_receive(:log).with(Syslog::LOG_INFO, "%s", record.message)
 
       sink.add_record(record)
     end
