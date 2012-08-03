@@ -12,21 +12,25 @@ require "steno/json_prettifier"
 
 Signal.trap("INT") { exit }
 
-def prettify_io(io, prettifier)
+def prettify_io(io, prettifier, ignore_parse_error = false)
   lineno = 0
   io.each_line do |line|
     begin
       prettified = prettifier.prettify_line(line)
       print prettified
-    rescue Yajl::ParseError => e
-      STDERR.puts "steno-prettify: Malformed json at line #{lineno}, '#{line.strip}'"
+    rescue Steno::JsonPrettifier::ParseError => e
+      if ignore_parse_error
+        print line
+      else
+        STDERR.puts "steno-prettify: Malformed json at line #{lineno}, '#{line.strip}'"
+      end
     end
 
     lineno += 1
   end
 end
 
-def prettify_file(path, prettifier)
+def prettify_file(path, prettifier, ignore_parse_error = false)
   begin
     f = File.open(path, "r")
   rescue => e
@@ -34,13 +38,14 @@ def prettify_file(path, prettifier)
     return
   end
 
-  prettify_io(f, prettifier)
+  prettify_io(f, prettifier, ignore_parse_error)
 
 ensure
   f.close if f
 end
 
 excluded_fields = []
+ignore_parse_error = false
 
 option_parser = OptionParser.new do |op|
   op.banner =<<EOT
@@ -68,6 +73,10 @@ EOT
   op.on("-a", "--align", "Omit location and data in order to provide well-aligned logs") do
     excluded_fields = %w[location data]
   end
+
+  op.on("-s", "--no-messages", "Donot complain about error messages in parsing json") do
+    ignore_parse_error = true
+  end
 end
 
 option_parser.parse!(ARGV)
@@ -80,9 +89,8 @@ inputs << "-" if inputs.empty?
 
 inputs.each do |path|
   if path == "-"
-    prettify_io(STDIN, prettifier)
+    prettify_io(STDIN, prettifier, ignore_parse_error)
   else
-    prettify_file(path, prettifier)
+    prettify_file(path, prettifier, ignore_parse_error)
   end
 end
-

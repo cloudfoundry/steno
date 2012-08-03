@@ -27,5 +27,17 @@ describe Steno::JsonPrettifier do
                    ].join("\s+") + "\n"
       prettified.should match(exp_regex)
     end
+
+    it "should raise a parse error when the json-encoded string is not a hash" do
+      expect {
+        prettifier.prettify_line("[1,2,3]")
+      }.to raise_error(Steno::JsonPrettifier::ParseError)
+    end
+
+    it "should raise a parse error when the json-encoded string is malformed" do
+      expect {
+        prettifier.prettify_line("blah")
+      }.to raise_error(Steno::JsonPrettifier::ParseError)
+    end
   end
 end
