@@ -27,5 +27,11 @@ describe Steno::JsonPrettifier do
                    ].join("\s+") + "\n"
       prettified.should match(exp_regex)
     end
+
+    it "should raise a parse error when the string is non-json" do
+      expect {
+        prettifier.prettify_line("blah")
+      }.to raise_error(Yajl::ParseError)
+    end
   end
 end
