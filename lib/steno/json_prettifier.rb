@@ -10,13 +10,20 @@ class Steno::JsonPrettifier
   FIELD_ORDER = %w[timestamp source process_id thread_id fiber_id location data
                    log_level message]
 
+  class ParseError < StandardError
+  end
+
   def initialize(excluded_fields = [])
     @time_format = "%Y-%m-%d %H:%M:%S.%6N"
     @excluded_fields = Set.new(excluded_fields)
   end
 
   def prettify_line(line)
-    json_record = Yajl::Parser.parse(line)
+    begin
+      json_record = Yajl::Parser.parse(line)
+    rescue Yajl::ParseError => e
+      raise ParseError, e.to_s
+    end
 
     format_record(json_record)
   end
@@ -24,6 +31,7 @@ class Steno::JsonPrettifier
   protected
 
   def format_record(record)
+    record ||= {}
     fields = []
 
     FIELD_ORDER.each do |field_name|
@@ -33,8 +41,11 @@ class Steno::JsonPrettifier
       pred_meth = "check_#{field_name}".to_sym
       if respond_to?(pred_meth)
         exists = send(pred_meth, record)
-      else
+      elsif record.respond_to?(:has_key?)
         exists = record.has_key?(field_name)
+      else
+        msg = "Expected the record to be a hash, but received: #{record.class}."
+        raise ParseError, msg
       end
 
       if exists
