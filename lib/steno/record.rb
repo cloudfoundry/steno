@@ -28,7 +28,7 @@ class Steno::Record
     @timestamp  = Time.now
     @source     = source
     @log_level  = log_level
-    @message    = message
+    @message    = message.to_s
     @data       = {}.merge(data)
     @thread_id  = Thread.current.object_id
     @fiber_id   = Fiber.current.object_id

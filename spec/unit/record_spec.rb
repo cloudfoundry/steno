@@ -1,7 +1,8 @@
 require "spec_helper"
 
 describe Steno::Record do
-  let(:record) { Steno::Record.new("test", :info, "test message") }
+  let(:message) { Array("test message") }
+  let(:record) { Steno::Record.new("test", :info, message) }
 
   it "should set the process id" do
     record.process_id.should == Process.pid
@@ -17,5 +18,9 @@ describe Steno::Record do
 
   it "should set the source" do
     record.source.should == "test"
+  end
+
+  it "should stringify the message" do
+    record.message.should be_a(String)
   end
 end
