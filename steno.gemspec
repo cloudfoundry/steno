@@ -26,7 +26,7 @@ Gem::Specification.new do |gem|
   gem.version       = Steno::VERSION
 
   gem.add_dependency("grape")
-  gem.add_dependency("yajl-ruby")
+  gem.add_dependency("yajl-ruby", "~> 1.0")
 
   gem.add_development_dependency("ci_reporter")
   gem.add_development_dependency("rack-test")
