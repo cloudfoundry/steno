@@ -11,6 +11,9 @@ Gem::Specification.new do |gem|
 
   gitignore = File.readlines(".gitignore").grep(/^[^#]/).map { |s| s.chomp }
 
+  # Ignore Gemfile, this is a library
+  gitignore << "Gemfile*"
+
   glob = Dir["**/*"].
     reject { |f| File.directory?(f) }.
     reject { |f| gitignore.any? { |i| File.fnmatch(i, f) } }
