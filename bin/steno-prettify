@@ -9,6 +9,9 @@ Signal.trap("INT") { exit }
 
 def prettify_io(io, prettifier, ignore_parse_error = false)
   lineno = 0
+
+  io.sync = true
+
   io.each_line do |line|
     begin
       prettified = prettifier.prettify_line(line)
