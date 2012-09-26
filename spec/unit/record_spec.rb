@@ -23,4 +23,8 @@ describe Steno::Record do
   it "should stringify the message" do
     record.message.should be_a(String)
   end
+
+  it "should use a UTC timestamp" do
+    record.timestamp.should be_within(0.001).of(Time.now.utc)
+  end
 end
