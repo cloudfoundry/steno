@@ -28,6 +28,42 @@ describe Steno::JsonPrettifier do
       prettified.should match(exp_regex)
     end
 
+    it "should always use the largest src len to determine src column width" do
+      test_srcs = [
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH - 3),
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH - 1),
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH),
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH + 1),
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH - 3),
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH + 3),
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH - 2),
+        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH + 2)
+      ]
+
+      regex = ['\d{4}-\d{2}-\d{2}',        # YYYY-MM-DD
+               '\d{2}:\d{2}:\d{2}\.\d{6}', # HH:MM:SS.uS
+               '([a-zA-Z0-9\ ]+)',         # Source (to be captured)
+               'pid=\d+',                  # Process id
+               '.+'                        # Everything else
+      ].join("\s") + "\n"
+
+      max_src_len = Steno::JsonPrettifier::MIN_COL_WIDTH
+      test_srcs.each do |src|
+        record = Steno::Record.new(src,
+                                   :info,
+                                   "message",
+                                   ["filename", "line", "method"],
+                                   "test" => "data")
+
+        encoded = codec.encode_record(record)
+        prettified = prettifier.prettify_line(encoded)
+        src_col = prettified.match(regex)[1]
+
+        max_src_len = [max_src_len, src.length].max
+        src_col.length.should == max_src_len
+      end
+    end
+
     it "should raise a parse error when the json-encoded string is not a hash" do
       expect {
         prettifier.prettify_line("[1,2,3]")

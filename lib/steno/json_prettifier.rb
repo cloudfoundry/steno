@@ -9,6 +9,7 @@ end
 class Steno::JsonPrettifier
   FIELD_ORDER = %w[timestamp source process_id thread_id fiber_id location data
                    log_level message]
+  MIN_COL_WIDTH = 14
 
   class ParseError < StandardError
   end
@@ -16,6 +17,7 @@ class Steno::JsonPrettifier
   def initialize(excluded_fields = [])
     @time_format = "%Y-%m-%d %H:%M:%S.%6N"
     @excluded_fields = Set.new(excluded_fields)
+    @max_src_len = MIN_COL_WIDTH
   end
 
   def prettify_line(line)
@@ -63,7 +65,8 @@ class Steno::JsonPrettifier
   end
 
   def format_source(record)
-    "%14s" % record["source"]
+    @max_src_len = [@max_src_len, record["source"].length].max
+    record["source"].ljust(@max_src_len)
   end
 
   def format_process_id(record)
