@@ -49,8 +49,11 @@ describe Steno::JsonPrettifier do
 
       max_src_len = Steno::JsonPrettifier::MIN_COL_WIDTH
       test_srcs.each do |src|
-        record = Steno::Record.new(src, :info, "message",
-                                   ["filename", "line", "method"], "test" => "data")
+        record = Steno::Record.new(src,
+                                   :info,
+                                   "message",
+                                   ["filename", "line", "method"],
+                                   "test" => "data")
 
         encoded = codec.encode_record(record)
         prettified = prettifier.prettify_line(encoded)
@@ -59,7 +62,6 @@ describe Steno::JsonPrettifier do
         max_src_len = [max_src_len, src.length].max
         src_col.length.should == max_src_len
       end
-
     end
 
     it "should raise a parse error when the json-encoded string is not a hash" do
