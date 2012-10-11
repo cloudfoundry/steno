@@ -10,7 +10,7 @@ describe Steno::Config do
 
       @mock_sink_file = mock("sink")
       @mock_sink_file.stub(:codec=)
-      Steno::Sink::IO.should_receive(:for_file).with(@log_path)
+      Steno::Sink::IO.should_receive(:for_file).with(@log_path, :max_retries => 1)
         .and_return(@mock_sink_file)
 
       @mock_sink_syslog = mock("sink")
@@ -94,7 +94,8 @@ describe Steno::Config do
       mock_sink = mock("sink")
       mock_sink.stub(:codec=)
 
-      Steno::Sink::IO.should_receive(:for_file).with(@log_path).and_return(mock_sink)
+      Steno::Sink::IO.should_receive(:for_file).
+        with(@log_path, :max_retries => 1).and_return(mock_sink)
       config = Steno::Config.from_file(@config_path)
       config.sinks.size.should == 1
       config.sinks[0].should == mock_sink
@@ -107,6 +108,18 @@ describe Steno::Config do
       mock_sink.stub(:codec=)
 
       Steno::Sink::Syslog.should_receive(:instance).twice().and_return(mock_sink)
+
+      config = Steno::Config.from_file(@config_path)
+      config.sinks.size.should == 1
+      config.sinks[0].should == mock_sink
+    end
+
+    it "should add an io sink to stdout if no sinks are explicitly specified in the config file" do
+      write_config(@config_path, {})
+      mock_sink = mock("sink")
+      mock_sink.stub(:codec=)
+
+      Steno::Sink::IO.should_receive(:new).with(STDOUT).and_return(mock_sink)
 
       config = Steno::Config.from_file(@config_path)
       config.sinks.size.should == 1
