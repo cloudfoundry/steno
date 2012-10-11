@@ -1,3 +1,3 @@
 module Steno
-  VERSION = "0.0.20"
+  VERSION = "1.0.0"
 end

@@ -42,7 +42,9 @@ class Steno::Config
       }
 
       if hash[:file]
-        opts[:sinks] << Steno::Sink::IO.for_file(hash[:file])
+        max_retries = hash[:max_retries]
+        opts[:sinks] << Steno::Sink::IO.for_file(hash[:file],
+                                                 :max_retries => max_retries)
       end
 
       if hash[:syslog]
@@ -50,7 +52,10 @@ class Steno::Config
         opts[:sinks] << Steno::Sink::Syslog.instance
       end
 
-      opts[:sinks] << Steno::Sink::IO.new(STDOUT) if opts[:sinks].empty?
+      if opts[:sinks].empty?
+        opts[:sinks] << Steno::Sink::IO.new(STDOUT)
+      end
+
       opts
     end
 
