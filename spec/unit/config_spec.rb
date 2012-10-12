@@ -88,7 +88,8 @@ describe Steno::Config do
     end
 
     it "should read the 'level' key if both default_log_level and level are spscified" do
-      write_config(@config_path, { "level" => "debug2", "default_log_level" => "warn" })
+      write_config(@config_path, { "level" => "debug2",
+                     "default_log_level" => "warn" })
       Steno::Config.from_file(@config_path).default_log_level.should == :debug2
     end
 
