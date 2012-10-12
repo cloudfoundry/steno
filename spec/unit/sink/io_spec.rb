@@ -63,9 +63,9 @@ describe Steno::Sink::IO do
 
       io.should_receive(:write).with(record.message).ordered.and_raise(IOError)
 
-      expect {
+      expect do
         Steno::Sink::IO.new(io, :codec => codec).add_record(record)
-      }.to raise_error(IOError)
+      end.to raise_error(IOError)
     end
 
     it "should retry not more than specified number of times on IOError" do
@@ -74,13 +74,29 @@ describe Steno::Sink::IO do
 
       io = mock("io")
 
-      io.should_receive(:write).exactly(3).times.with(record.message).ordered.
+      io.should_receive(:write).exactly(3).times.with(record.message).
         and_raise(IOError)
 
-      expect {
+      expect do
         Steno::Sink::IO.new(io, :codec => codec, :max_retries => 2).
           add_record(record)
-      }.to raise_error(IOError)
+      end.to raise_error(IOError)
+    end
+
+    it "should retry on IOError and succeed" do
+      codec = mock("codec")
+      codec.should_receive(:encode_record).with(record).and_return(record.message)
+
+      io = mock("io")
+      io.should_receive(:write).with(record.message).once.
+        and_raise(IOError)
+      io.should_receive(:write).with(record.message).once.ordered.
+        and_return(record.message)
+
+      expect do
+        Steno::Sink::IO.new(io, :codec => codec, :max_retries => 1).
+          add_record(record)
+      end.to_not raise_error(IOError)
     end
   end
 
