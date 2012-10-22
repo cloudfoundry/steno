@@ -15,7 +15,7 @@ def prettify_io(io, prettifier, ignore_parse_error = false)
 
   io.each_line do |line|
     begin
-      match_data = line.match(json_regex)
+      match_data = line.match(json_regex) || []
       prefix = match_data[1]
       json = match_data[2]
 
