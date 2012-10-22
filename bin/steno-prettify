@@ -8,7 +8,7 @@ require "steno/json_prettifier"
 Signal.trap("INT") { exit }
 
 def prettify_io(io, prettifier, ignore_parse_error = false)
-  lineno = 0
+  lineno = 1
   json_regex = '([^{]*)({.*})'
 
   io.sync = true
