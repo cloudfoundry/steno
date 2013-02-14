@@ -5,10 +5,19 @@ require "yajl"
 module Steno
 end
 
-# Transforms JSON log lines into a more human readable format
 class Steno::JsonPrettifier
-  FIELD_ORDER = %w[timestamp source process_id thread_id fiber_id location data
-                   log_level message]
+  FIELD_ORDER = %w[
+    timestamp
+    source
+    process_id
+    thread_id
+    fiber_id
+    location
+    data
+    log_level
+    message
+  ]
+
   MIN_COL_WIDTH = 14
 
   class ParseError < StandardError
@@ -96,6 +105,10 @@ class Steno::JsonPrettifier
     end
 
     "%s/%s:%s" % [trimmed_filename, record["method"], record["lineno"]]
+  end
+
+  def check_data(record)
+    record["data"].is_a?(Hash)
   end
 
   def format_data(record)

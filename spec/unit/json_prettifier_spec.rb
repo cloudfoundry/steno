@@ -75,5 +75,10 @@ describe Steno::JsonPrettifier do
         prettifier.prettify_line("blah")
       }.to raise_error(Steno::JsonPrettifier::ParseError)
     end
+
+    it "should work with a nil data field" do
+      line = prettifier.prettify_line(%@{"data":null}@)
+      line.should include(" - ")
+    end
   end
 end
