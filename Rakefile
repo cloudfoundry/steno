@@ -2,6 +2,8 @@
 require "ci/reporter/rake/rspec"
 require "rspec/core/rake_task"
 
+task :default => :spec
+
 desc "Run all specs"
 RSpec::Core::RakeTask.new("spec") do |t|
   t.rspec_opts = %w[--color --format documentation]
