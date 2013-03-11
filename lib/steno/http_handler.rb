@@ -7,7 +7,6 @@ end
 
 class Steno::HttpHandler < Grape::API
   format :json
-  error_format :json
 
   resource :loggers do
     get :levels do
