@@ -52,6 +52,10 @@ class Steno::Config
         opts[:sinks] << Steno::Sink::Syslog.instance
       end
 
+      if hash[:fluentd]
+        opts[:sinks] << Steno::Sink::Fluentd.new(hash[:fluentd])
+      end
+
       if opts[:sinks].empty?
         opts[:sinks] << Steno::Sink::IO.new(STDOUT)
       end
