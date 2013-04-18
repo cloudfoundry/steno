@@ -68,10 +68,10 @@ config = Steno::Config.from_hash(config_hash)
     off		0
     fatal	1
     error	5
-	warn	10
-	info	15
-	debug	16
-	debug1	17
-	debug2	18
-	all		30
+    warn	10
+    info	15
+    debug	16
+    debug1	17
+    debug2	18
+    all		30
 
