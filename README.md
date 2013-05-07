@@ -11,8 +11,6 @@ ultimate destination for log records. They transform a structured record into
 a string via a formatter and then typically write the transformed string to
 another transport.
 
-
-
 ## Configuration
 
 To use steno, you must configure one or more 'sinks', a 'codec' and a 'context'.
@@ -63,3 +61,17 @@ config = Steno::Config.from_hash(config_hash)
     Steno.init(config)
     logger = Steno.logger("test")  
     logger.info("Hello world!")
+
+### Log levels
+
+    LEVEL	NUMERIC RANKING 
+    off		0
+    fatal	1
+    error	5
+    warn	10
+    info	15
+    debug	16
+    debug1	17
+    debug2	18
+    all		30
+
