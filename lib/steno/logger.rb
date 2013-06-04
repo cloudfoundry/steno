@@ -104,7 +104,6 @@ class Steno::Logger
   # @return [true || false]
   def level_active?(level_name)
     level = self.class.lookup_level(level_name)
-
     @min_level_lock.synchronize { level <= @min_level }
   end
 
@@ -125,9 +124,10 @@ class Steno::Logger
   #
   # @return [nil]
   def log(level_name, message = nil, user_data = nil, &blk)
-    return unless level_active?(level_name)
-
     level = self.class.lookup_level(level_name)
+    level.inc
+
+    return unless level_active?(level_name)
 
     message = yield if block_given?
 

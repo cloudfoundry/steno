@@ -12,6 +12,8 @@ class Steno::LogLevel
   def initialize(name, priority)
     @name = name
     @priority = priority
+    @mutex = Mutex.new
+    @count = 0
   end
 
   def to_s
@@ -20,5 +22,13 @@ class Steno::LogLevel
 
   def <=>(other)
     @priority <=> other.priority
+  end
+
+  def count
+    @mutex.synchronize { @count }
+  end
+
+  def inc
+    @mutex.synchronize { @count += 1 }
   end
 end
