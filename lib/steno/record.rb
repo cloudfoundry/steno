@@ -25,6 +25,8 @@ class Steno::Record
   #        Format is [<filename>, <lineno>, <method>].
   # @param [Hash]   data       User-supplied data
   def initialize(source, log_level, message, loc = [], data = {})
+    raise "Log level must be a Symbol" unless log_level.is_a? Symbol
+
     @timestamp  = Time.now
     @source     = source
     @log_level  = log_level

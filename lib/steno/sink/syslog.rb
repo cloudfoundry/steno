@@ -34,7 +34,7 @@ class Steno::Sink::Syslog < Steno::Sink::Base
   def add_record(record)
     record = truncate_record(record)
     msg = @codec.encode_record(record)
-    pri = LOG_LEVEL_MAP[record.log_level.name]
+    pri = LOG_LEVEL_MAP[record.log_level]
     @syslog_lock.synchronize { @syslog.log(pri, "%s", msg) }
   end
 

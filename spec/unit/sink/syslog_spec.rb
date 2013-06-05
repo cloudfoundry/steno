@@ -6,11 +6,11 @@ describe Steno::Sink::Syslog do
   end
 
   let(:record) do
-    Steno::Record.new("source", level, "message")
+    Steno::Record.new("source", level.name, "message")
   end
 
   let(:record_with_big_message) do
-    Steno::Record.new("source", level,
+    Steno::Record.new("source", level.name,
                       "a" * (Steno::Sink::Syslog::MAX_MESSAGE_SIZE + 1))
   end
 

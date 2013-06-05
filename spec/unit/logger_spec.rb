@@ -72,6 +72,16 @@ describe Steno::Logger do
       logger.warn { invoked = true }
       invoked.should be_true
     end
+
+    it "creates a record with the proper level" do
+      sink = mock("sink")
+      Steno::Record.should_receive(:new).with("test", :warn, "message", anything, anything).and_call_original
+      sink.stub(:add_record)
+
+      my_logger = Steno::Logger.new("test", [sink])
+
+      my_logger.warn("message")
+    end
   end
 
   describe "#logf" do

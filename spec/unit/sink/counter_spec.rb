@@ -6,7 +6,7 @@ describe Steno::Sink::Counter do
   end
 
   let(:record) do
-    Steno::Record.new("source", level, "message")
+    Steno::Record.new("source", level.name, "message")
   end
 
   describe "add_record" do

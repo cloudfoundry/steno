@@ -14,7 +14,7 @@ class Steno::Sink::Counter < Steno::Sink::Base
   end
 
   def add_record(record)
-    level = record.log_level.name.to_s
+    level = record.log_level.to_s
 
     @mutex.synchronize do
       unless @counts[level]

@@ -133,7 +133,7 @@ class Steno::Logger
 
     data = @context.data.merge(user_data || {})
 
-    record = Steno::Record.new(@name, level, message, loc, data)
+    record = Steno::Record.new(@name, level_name, message, loc, data)
 
     @sinks.each { |sink| sink.add_record(record) }
 
