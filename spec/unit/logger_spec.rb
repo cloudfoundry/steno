@@ -72,14 +72,6 @@ describe Steno::Logger do
       logger.warn { invoked = true }
       invoked.should be_true
     end
-
-    it "increments the level's count" do
-      log_level = Steno::Logger::LEVELS[:debug]
-
-      expect {
-        logger.log(:debug, "message")
-      }.to change{log_level.count}.by(1)
-    end
   end
 
   describe "#logf" do

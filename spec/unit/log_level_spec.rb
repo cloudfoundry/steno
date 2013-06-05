@@ -16,15 +16,4 @@ describe Steno::LogLevel do
     end
   end
 
-  describe "#count and #inc" do
-    it "increments and fetches the count" do
-      expect(info_level.count).to eq 0
-
-      info_level.inc
-      expect(info_level.count).to eq 1
-
-      info_level.inc
-      expect(info_level.count).to eq 2
-    end
-  end
 end

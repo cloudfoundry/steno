@@ -124,9 +124,6 @@ class Steno::Logger
   #
   # @return [nil]
   def log(level_name, message = nil, user_data = nil, &blk)
-    level = self.class.lookup_level(level_name)
-    level.inc
-
     return unless level_active?(level_name)
 
     message = yield if block_given?
