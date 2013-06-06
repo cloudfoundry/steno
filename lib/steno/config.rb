@@ -43,8 +43,7 @@ class Steno::Config
 
       if hash[:file]
         max_retries = hash[:max_retries]
-        opts[:sinks] << Steno::Sink::IO.for_file(hash[:file],
-                                                 :max_retries => max_retries)
+        opts[:sinks] << Steno::Sink::IO.for_file(hash[:file], :max_retries => max_retries)
       end
 
       if hash[:syslog]
@@ -64,17 +63,7 @@ class Steno::Config
     end
 
     def symbolize_keys(hash)
-      hash ||= {}
-      symbolized = {}
-      hash.each_key do |key|
-        if !key.is_a? Symbol
-          symbolized[key.to_sym] = hash[key]
-        else
-          symbolized[key] = hash[key]
-        end
-      end
-
-      symbolized
+      Hash[hash.each_pair.map { |k, v| [k.to_sym, v] }]
     end
   end
 
