@@ -33,7 +33,8 @@ Alternatively, Steno can read its configuration from a YAML file in the followin
 logging:
   file: /some/path            # Optional - path a log file
   max_retries: 3              # Optional - number of times to retry if a file write fails.
-  syslog: some_syslog.id      # Optional
+  syslog: some_syslog.id      # Optional - only works on *nix systems
+  eventlog: true              # Optional - only works on Windows
   fluentd:                    # Optional
     host: fluentd.host
     port: 9999

@@ -28,9 +28,13 @@ Gem::Specification.new do |gem|
   gem.add_dependency("grape")
   gem.add_dependency("yajl-ruby", "~> 1.0")
   gem.add_dependency("fluent-logger")
-
+  
   gem.add_development_dependency("ci_reporter")
   gem.add_development_dependency("rack-test")
   gem.add_development_dependency("rake")
   gem.add_development_dependency("rspec")
+  
+  if RUBY_PLATFORM=~ /mswin|mingw|cygwin/
+   gem.add_dependency("win32-eventlog")
+  end
 end
