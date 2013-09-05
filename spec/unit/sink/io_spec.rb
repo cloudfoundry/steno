@@ -11,12 +11,12 @@ describe Steno::Sink::IO do
 
   describe ".for_file" do
     it "should return a new sink configured to append to the file at path with autosync set to true by default" do
-      mock_handle = mock("file handle")
+      mock_handle = double("file handle")
 
       File.should_receive(:open).with("path", "a+").and_return(mock_handle)
       mock_handle.should_receive(:sync=).with(true)
 
-      mock_sink = mock("sink")
+      mock_sink = double("sink")
       Steno::Sink::IO.should_receive(:new).with(mock_handle,
                                                 :max_retries => 10).
         and_return(mock_sink)
@@ -27,12 +27,12 @@ describe Steno::Sink::IO do
     end
 
     it "should return a new sink configured to append to the file at path with specified options" do
-      mock_handle = mock("file handle")
+      mock_handle = double("file handle")
 
       File.should_receive(:open).with("path", "a+").and_return(mock_handle)
       mock_handle.should_receive(:sync=).with(false)
 
-      mock_sink = mock("sink")
+      mock_sink = double("sink")
       Steno::Sink::IO.should_receive(:new).with(mock_handle,
                                                 :max_retries => 10).
         and_return(mock_sink)
@@ -46,20 +46,20 @@ describe Steno::Sink::IO do
 
   describe "#add_record" do
     it "should encode the record and write it to the underlying io object" do
-      codec = mock("codec")
+      codec = double("codec")
       codec.should_receive(:encode_record).with(record).and_return(record.message)
 
-      io = mock("io")
+      io = double("io")
       io.should_receive(:write).with(record.message)
 
       Steno::Sink::IO.new(io, :codec => codec).add_record(record)
     end
 
     it "should by default not retry on IOError" do
-      codec = mock("codec")
+      codec = double("codec")
       codec.should_receive(:encode_record).with(record).and_return(record.message)
 
-      io = mock("io")
+      io = double("io")
 
       io.should_receive(:write).with(record.message).ordered.and_raise(IOError)
 
@@ -69,10 +69,10 @@ describe Steno::Sink::IO do
     end
 
     it "should retry not more than specified number of times on IOError" do
-      codec = mock("codec")
+      codec = double("codec")
       codec.should_receive(:encode_record).with(record).and_return(record.message)
 
-      io = mock("io")
+      io = double("io")
 
       io.should_receive(:write).exactly(3).times.with(record.message).
         and_raise(IOError)
@@ -84,10 +84,10 @@ describe Steno::Sink::IO do
     end
 
     it "should retry on IOError and succeed" do
-      codec = mock("codec")
+      codec = double("codec")
       codec.should_receive(:encode_record).with(record).and_return(record.message)
 
-      io = mock("io")
+      io = double("io")
       io.should_receive(:write).with(record.message).once.
         and_raise(IOError)
       io.should_receive(:write).with(record.message).once.ordered.
@@ -102,7 +102,7 @@ describe Steno::Sink::IO do
 
   describe "#flush" do
     it "should call flush on the underlying io object" do
-      io = mock("io")
+      io = double("io")
       io.should_receive(:flush)
 
       Steno::Sink::IO.new(io).flush

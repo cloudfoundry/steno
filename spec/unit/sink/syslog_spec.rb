@@ -18,7 +18,7 @@ unless Steno::Sink::WINDOWS
       it "should append an encoded record with the correct priority" do
         identity = "test"
 
-        syslog = mock("syslog")
+        syslog = double("syslog")
         Syslog.should_receive(:open) \
             .with(identity, Syslog::LOG_PID, Syslog::LOG_USER) \
             .and_return(syslog)
@@ -26,7 +26,7 @@ unless Steno::Sink::WINDOWS
         sink = Steno::Sink::Syslog.instance
         sink.open(identity)
 
-        codec = mock("codec")
+        codec = double("codec")
         codec.should_receive(:encode_record).with(record).and_return(record.message)
         sink.codec = codec
 
@@ -38,7 +38,7 @@ unless Steno::Sink::WINDOWS
       it "should truncate the record message if its greater than than allowed size" do
         identity = "test"
 
-        syslog = mock("syslog")
+        syslog = double("syslog")
         Syslog.should_receive(:open) \
             .with(identity, Syslog::LOG_PID, Syslog::LOG_USER) \
             .and_return(syslog)
@@ -49,7 +49,7 @@ unless Steno::Sink::WINDOWS
         truncated = record_with_big_message.message.
             slice(0..(Steno::Sink::Syslog::MAX_MESSAGE_SIZE) - 1)
         truncated << "..."
-        codec = mock("codec")
+        codec = double("codec")
         codec.should_receive(:encode_record) do |*args|
           args.size.should == 1
           args[0].message.should == truncated

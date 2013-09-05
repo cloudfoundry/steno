@@ -12,7 +12,7 @@ if Steno::Sink::WINDOWS
     describe "#add_record" do
 
       it "should append an encoded record with the correct priority" do
-        eventlog = mock("Win32::EventLog")
+        eventlog = double("Win32::EventLog")
         Win32::EventLog.should_receive(:open) \
             .with('Application') \
             .and_return(eventlog)
@@ -20,7 +20,7 @@ if Steno::Sink::WINDOWS
         sink = Steno::Sink::Eventlog.instance
         sink.open
 
-        codec = mock("codec")
+        codec = double("codec")
         codec.should_receive(:encode_record).with(record).and_return(record.message)
         sink.codec = codec
 

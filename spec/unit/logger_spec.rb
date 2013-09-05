@@ -44,7 +44,7 @@ describe Steno::Logger do
 
   describe "#log" do
     it "should not forward any messages for levels that are inactive" do
-      sink = mock("sink")
+      sink = double("sink")
       sink.should_not_receive(:add_record)
 
       my_logger = Steno::Logger.new("test", [sink])
@@ -53,7 +53,7 @@ describe Steno::Logger do
     end
 
     it "should forward messages for levels that are active" do
-      sink = mock("sink")
+      sink = double("sink")
       sink.should_receive(:add_record).with(any_args())
 
       my_logger = Steno::Logger.new("test", [sink])
@@ -74,7 +74,7 @@ describe Steno::Logger do
     end
 
     it "creates a record with the proper level" do
-      sink = mock("sink")
+      sink = double("sink")
       Steno::Record.should_receive(:new).with("test", :warn, "message", anything, anything).and_call_original
       sink.stub(:add_record)
 

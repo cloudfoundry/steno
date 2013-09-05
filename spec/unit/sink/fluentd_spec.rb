@@ -36,7 +36,7 @@ describe Steno::Sink::IO do
 
   describe "#add_record" do
     it "should post an record with the correct tag" do
-      fluentd = mock("fluentd")
+      fluentd = double("fluentd")
       Fluent::Logger::FluentLogger.should_receive(:new).and_return(fluentd)
       fluentd.should_receive(:post).with("source", record)
       sink = Steno::Sink::Fluentd.new()

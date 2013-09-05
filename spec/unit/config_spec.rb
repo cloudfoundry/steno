@@ -10,13 +10,13 @@ describe Steno::Config do
       before :each do
         @log_path = "some_file"
 
-        @mock_sink_file = mock("sink")
+        @mock_sink_file = double("sink")
         @mock_sink_file.stub(:codec=)
         Steno::Sink::IO.should_receive(:for_file).with(@log_path,
                                                        :max_retries => 5)
         .and_return(@mock_sink_file)
 
-        @mock_sink_eventlog = mock("sink")
+        @mock_sink_eventlog = double("sink")
         @mock_sink_eventlog.stub(:codec=)
         @mock_sink_eventlog.should_receive(:open).with("test")
         Steno::Sink::Eventlog.should_receive(:instance).twice()
@@ -60,13 +60,13 @@ describe Steno::Config do
       before :each do
         @log_path = "some_file"
 
-        @mock_sink_file = mock("sink")
+        @mock_sink_file = double("sink")
         @mock_sink_file.stub(:codec=)
         Steno::Sink::IO.should_receive(:for_file).with(@log_path,
                                                        :max_retries => 5)
         .and_return(@mock_sink_file)
 
-        @mock_sink_syslog = mock("sink")
+        @mock_sink_syslog = double("sink")
         @mock_sink_syslog.stub(:codec=)
         @mock_sink_syslog.should_receive(:open).with("test")
         Steno::Sink::Syslog.should_receive(:instance).twice()
@@ -149,7 +149,7 @@ describe Steno::Config do
 
     it "should add a file sink if the 'file' key is specified" do
       write_config(@config_path, {"file" => @log_path, "max_retries" => 2})
-      mock_sink = mock("sink")
+      mock_sink = double("sink")
       mock_sink.stub(:codec=)
 
       Steno::Sink::IO.should_receive(:for_file).
@@ -162,7 +162,7 @@ describe Steno::Config do
     if Steno::Sink::WINDOWS
       it "should add a event sink if the 'eventlog' key is specified" do
         write_config(@config_path, {"eventlog" => "test"})
-        mock_sink = mock("sink")
+        mock_sink = double("sink")
         mock_sink.should_receive(:open).with("test")
         mock_sink.stub(:codec=)
 
@@ -175,7 +175,7 @@ describe Steno::Config do
     else
       it "should add a syslog sink if the 'syslog' key is specified" do
         write_config(@config_path, {"syslog" => "test"})
-        mock_sink = mock("sink")
+        mock_sink = double("sink")
         mock_sink.should_receive(:open).with("test")
         mock_sink.stub(:codec=)
 
@@ -191,7 +191,7 @@ describe Steno::Config do
 
     it "should add an io sink to stdout if no sinks are explicitly specified in the config file" do
       write_config(@config_path, {})
-      mock_sink = mock("sink")
+      mock_sink = double("sink")
       mock_sink.stub(:codec=)
 
       Steno::Sink::IO.should_receive(:new).with(STDOUT).and_return(mock_sink)
