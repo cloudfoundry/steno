@@ -35,6 +35,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency("rspec")
   
   if RUBY_PLATFORM=~ /mswin|mingw|cygwin/
-   gem.add_dependency("win32-eventlog")
+    gem.platform      = Gem::Platform::CURRENT
+    gem.add_dependency("win32-eventlog")
   end
 end
