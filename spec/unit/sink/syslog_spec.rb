@@ -47,12 +47,13 @@ unless Steno::Sink::WINDOWS
         sink.open(identity)
 
         truncated = record_with_big_message.message.
-            slice(0..(Steno::Sink::Syslog::MAX_MESSAGE_SIZE) - 1)
-        truncated << "..."
+            slice(0..(Steno::Sink::Syslog::MAX_MESSAGE_SIZE) - 4)
+        truncated << Steno::Sink::Syslog::TRUNCATE_POSTFIX
         codec = double("codec")
         codec.should_receive(:encode_record) do |*args|
           args.size.should == 1
           args[0].message.should == truncated
+          args[0].message.size.should <= Steno::Sink::Syslog::MAX_MESSAGE_SIZE
 
           next args[0].message
         end
