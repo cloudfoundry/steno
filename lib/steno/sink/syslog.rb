@@ -9,6 +9,7 @@ unless Steno::Sink::WINDOWS
     include Singleton
 
     MAX_MESSAGE_SIZE = 1024 * 3
+    TRUNCATE_POSTFIX = "..."
 
     LOG_LEVEL_MAP = {
         :fatal  => Syslog::LOG_CRIT,
@@ -48,8 +49,8 @@ unless Steno::Sink::WINDOWS
     def truncate_record(record)
       return record if record.message.size <= MAX_MESSAGE_SIZE
 
-      truncated = record.message.slice(0..(MAX_MESSAGE_SIZE - 1))
-      truncated << "..."
+      truncated = record.message.slice(0...(MAX_MESSAGE_SIZE - TRUNCATE_POSTFIX.size))
+      truncated << TRUNCATE_POSTFIX
       Steno::Record.new(record.source, record.log_level,
                         truncated,
                         [record.file, record.lineno, record.method],
