@@ -25,7 +25,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Steno::VERSION
 
-  gem.add_dependency("grape")
   gem.add_dependency("yajl-ruby", "~> 1.0")
   gem.add_dependency("fluent-logger")
   
