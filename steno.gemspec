@@ -35,6 +35,6 @@ Gem::Specification.new do |gem|
   
   if RUBY_PLATFORM=~ /mswin|mingw|cygwin/
     gem.platform      = Gem::Platform::CURRENT
-    gem.add_dependency("win32-eventlog")
+    gem.add_dependency("win32-eventlog", "~> 0.6.0")
   end
 end
