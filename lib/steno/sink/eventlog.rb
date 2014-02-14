@@ -9,13 +9,13 @@ if Steno::Sink::WINDOWS
     include Singleton
 
     LOG_LEVEL_MAP = {
-        :fatal => Win32::EventLog::ERROR,
-        :error => Win32::EventLog::ERROR,
-        :warn => Win32::EventLog::WARN,
-        :info => Win32::EventLog::INFO,
-        :debug => Win32::EventLog::INFO,
-        :debug1 => Win32::EventLog::INFO,
-        :debug2 => Win32::EventLog::INFO,
+        :fatal => Win32::EventLog::ERROR_TYPE,
+        :error => Win32::EventLog::ERROR_TYPE,
+        :warn => Win32::EventLog::WARN_TYPE,
+        :info => Win32::EventLog::INFO_TYPE,
+        :debug => Win32::EventLog::INFO_TYPE,
+        :debug1 => Win32::EventLog::INFO_TYPE,
+        :debug2 => Win32::EventLog::INFO_TYPE,
     }
 
     def initialize

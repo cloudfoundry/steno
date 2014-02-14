@@ -25,7 +25,7 @@ if Steno::Sink::WINDOWS
         sink.codec = codec
 
         eventlog.should_receive(:report_event).with(:source      => "CloudFoundry",
-                                                    :event_type  => Win32::EventLog::INFO,
+                                                    :event_type  => Win32::EventLog::INFO_TYPE,
                                                     :data        => record.message)
 
         sink.add_record(record)
