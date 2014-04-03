@@ -96,7 +96,7 @@ describe Steno::Sink::IO do
       expect do
         Steno::Sink::IO.new(io, :codec => codec, :max_retries => 1).
           add_record(record)
-      end.to_not raise_error(IOError)
+      end.to_not raise_error
     end
   end
 
