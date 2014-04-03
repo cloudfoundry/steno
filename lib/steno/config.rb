@@ -41,6 +41,10 @@ class Steno::Config
         :default_log_level => level.nil? ? :info : level.to_sym
       }
 
+      if hash[:iso8601_timestamps]
+        opts[:codec] = Steno::Codec::Json.new(:iso8601_timestamps => true)
+      end
+
       if hash[:file]
         max_retries = hash[:max_retries]
         opts[:sinks] << Steno::Sink::IO.for_file(hash[:file], :max_retries => max_retries)

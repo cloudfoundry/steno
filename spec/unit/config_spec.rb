@@ -131,6 +131,14 @@ describe Steno::Config do
       config.context.class.should == Steno::Context::Null
 
       config.codec.class.should == Steno::Codec::Json
+      config.codec.iso8601_timestamps?.should == false
+    end
+
+    it "should configure json codec with readable dates if iso8601_timestamps is true" do
+      write_config(@config_path, {"iso8601_timestamps" => "true"})
+      config = Steno::Config.from_file(@config_path)
+      config.codec.class.should == Steno::Codec::Json
+      config.codec.iso8601_timestamps?.should == true
     end
 
     it "should set the default_log_level if a key with the same name is supplied" do
