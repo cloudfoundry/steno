@@ -27,8 +27,8 @@ describe Steno::Config do
         @config = Steno::Config.from_hash(@hash)
 
         @config.default_log_level.should == :debug2
-        @config.context.should.class == Steno::Context::Null
-        @config.codec.should.class == Steno::Codec::Json
+        @config.context.class.should == Steno::Context::Null
+        @config.codec.class.should == Steno::Codec::Json
 
         @config.sinks.size.should == 2
         @config.sinks.should =~ [@mock_sink_file, @mock_sink_eventlog]
@@ -77,8 +77,8 @@ describe Steno::Config do
         @config = Steno::Config.from_hash(@hash)
 
         @config.default_log_level.should == :debug2
-        @config.context.should.class == Steno::Context::Null
-        @config.codec.should.class == Steno::Codec::Json
+        @config.context.class.should == Steno::Context::Null
+        @config.codec.class.should == Steno::Codec::Json
 
         @config.sinks.size.should == 2
         @config.sinks.should =~ [@mock_sink_file, @mock_sink_syslog]
@@ -128,9 +128,9 @@ describe Steno::Config do
 
       config.default_log_level.should == :info
 
-      config.context.should.class == Steno::Context::Null
+      config.context.class.should == Steno::Context::Null
 
-      config.codec.should.class == Steno::Codec::Json
+      config.codec.class.should == Steno::Codec::Json
     end
 
     it "should set the default_log_level if a key with the same name is supplied" do
