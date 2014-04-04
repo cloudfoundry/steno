@@ -36,6 +36,26 @@ describe Steno::Codec::Json do
       rec = make_record(:message => msg)
       codec.encode_record(rec).should match(/HI\\\\xe2\\\\x80\\\\xa6/)
     end
+
+    it "shouldn't use readable dates by default" do
+      codec.iso8601_timestamps?.should == false
+    end
+
+    context "when iso8601_timestamps is set" do
+      let(:codec) { Steno::Codec::Json.new( :iso8601_timestamps => true ) }
+
+      it "should encode timestamps as UTC-formatted strings" do
+        allow(record).to receive(:timestamp).and_return 1396473763.811278 # 2014-04-02 22:22:43 +01:00
+        parsed = Yajl::Parser.parse(codec.encode_record(record))
+
+        parsed["timestamp"].class.should == String
+        parsed["timestamp"].should eq("2014-04-02T21:22:43.811278Z")
+      end
+
+      it "should surface the property in a getter" do
+        codec.iso8601_timestamps?.should == true
+      end
+    end
   end
 
   def make_record(opts = {})

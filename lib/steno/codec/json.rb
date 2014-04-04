@@ -8,6 +8,11 @@ module Steno
 end
 
 class Steno::Codec::Json < Steno::Codec::Base
+
+  def initialize(opts = {})
+    @iso8601_timestamps = opts[:iso8601_timestamps] || false
+  end
+
   def encode_record(record)
     msg =
       if record.message.valid_encoding?
@@ -31,6 +36,14 @@ class Steno::Codec::Json < Steno::Codec::Base
       "method"     => record.method,
     }
 
-    Yajl::Encoder.encode(h) + "\n"
+    if iso8601_timestamps?
+      h["timestamp"] = Time.at(record.timestamp).utc.iso8601(6)
+    end
+
+     Yajl::Encoder.encode(h) + "\n"
+  end
+
+  def iso8601_timestamps?
+    @iso8601_timestamps
   end
 end
