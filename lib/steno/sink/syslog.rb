@@ -3,7 +3,7 @@ unless Steno::Sink::WINDOWS
 
   require "singleton"
   require "thread"
-  require "syslog"
+  require "syslog/logger"
 
   class Steno::Sink::Syslog < Steno::Sink::Base
     include Singleton
@@ -30,7 +30,9 @@ unless Steno::Sink::WINDOWS
 
     def open(identity)
       @identity = identity
-      @syslog = Syslog.open(@identity, Syslog::LOG_PID, Syslog::LOG_USER)
+
+      Syslog::Logger.new(@identity)
+      @syslog = Syslog::Logger.syslog
     end
 
     def add_record(record)

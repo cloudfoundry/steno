@@ -11,17 +11,19 @@ unless Steno::Sink::WINDOWS
 
     let(:record_with_big_message) do
       Steno::Record.new("source", level.name,
-                        "a" * (Steno::Sink::Syslog::MAX_MESSAGE_SIZE + 1))
+        "a" * (Steno::Sink::Syslog::MAX_MESSAGE_SIZE + 1))
     end
 
     describe "#add_record" do
+      after do
+        Syslog::Logger.syslog = nil
+      end
+
       it "should append an encoded record with the correct priority" do
         identity = "test"
 
-        syslog = double("syslog")
-        expect(Syslog).to receive(:open) \
-            .with(identity, Syslog::LOG_PID, Syslog::LOG_USER) \
-            .and_return(syslog)
+        syslog = double("syslog", facility: nil)
+        expect(Syslog).to receive(:open).and_return(syslog)
 
         sink = Steno::Sink::Syslog.instance
         sink.open(identity)
@@ -38,10 +40,8 @@ unless Steno::Sink::WINDOWS
       it "should truncate the record message if its greater than than allowed size" do
         identity = "test"
 
-        syslog = double("syslog")
-        expect(Syslog).to receive(:open) \
-            .with(identity, Syslog::LOG_PID, Syslog::LOG_USER) \
-            .and_return(syslog)
+        syslog = double("syslog", facility: nil)
+        expect(Syslog).to receive(:open).and_return(syslog)
 
         sink = Steno::Sink::Syslog.instance
         sink.open(identity)
