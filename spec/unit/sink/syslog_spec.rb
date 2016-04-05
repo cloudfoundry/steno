@@ -19,7 +19,7 @@ unless Steno::Sink::WINDOWS
         identity = "test"
 
         syslog = double("syslog")
-        Syslog.should_receive(:open) \
+        expect(Syslog).to receive(:open) \
             .with(identity, Syslog::LOG_PID, Syslog::LOG_USER) \
             .and_return(syslog)
 
@@ -27,10 +27,10 @@ unless Steno::Sink::WINDOWS
         sink.open(identity)
 
         codec = double("codec")
-        codec.should_receive(:encode_record).with(record).and_return(record.message)
+        expect(codec).to receive(:encode_record).with(record).and_return(record.message)
         sink.codec = codec
 
-        syslog.should_receive(:log).with(Syslog::LOG_INFO, "%s", record.message)
+        expect(syslog).to receive(:log).with(Syslog::LOG_INFO, "%s", record.message)
 
         sink.add_record(record)
       end
@@ -39,7 +39,7 @@ unless Steno::Sink::WINDOWS
         identity = "test"
 
         syslog = double("syslog")
-        Syslog.should_receive(:open) \
+        expect(Syslog).to receive(:open) \
             .with(identity, Syslog::LOG_PID, Syslog::LOG_USER) \
             .and_return(syslog)
 
@@ -50,17 +50,17 @@ unless Steno::Sink::WINDOWS
             slice(0..(Steno::Sink::Syslog::MAX_MESSAGE_SIZE) - 4)
         truncated << Steno::Sink::Syslog::TRUNCATE_POSTFIX
         codec = double("codec")
-        codec.should_receive(:encode_record) do |*args|
-          args.size.should == 1
-          args[0].message.should == truncated
-          args[0].message.size.should <= Steno::Sink::Syslog::MAX_MESSAGE_SIZE
+        expect(codec).to receive(:encode_record) do |*args|
+          expect(args.size).to eq(1)
+          expect(args[0].message).to eq(truncated)
+          expect(args[0].message.size).to be <= Steno::Sink::Syslog::MAX_MESSAGE_SIZE
 
           next args[0].message
         end
 
         sink.codec = codec
 
-        syslog.should_receive(:log).with(Syslog::LOG_INFO, "%s", truncated)
+        expect(syslog).to receive(:log).with(Syslog::LOG_INFO, "%s", truncated)
 
         sink.add_record(record_with_big_message)
       end

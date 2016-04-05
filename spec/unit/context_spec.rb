@@ -6,9 +6,9 @@ describe Steno::Context::Null do
   let(:context) { Steno::Context::Null.new }
 
   it "should store no data" do
-    context.data.should == {}
+    expect(context.data).to eq({})
     context.data["foo"] = "bar"
-    context.data.should == {}
+    expect(context.data).to eq({})
   end
 end
 
@@ -25,12 +25,12 @@ describe Steno::Context::ThreadLocal do
       context.data["thread"] = "t1"
       b1.release
       b2.wait
-      context.data["thread"].should == "t1"
+      expect(context.data["thread"]).to eq("t1")
     end
 
     t2 = Thread.new do
       b1.wait
-      context.data["thread"].should be_nil
+      expect(context.data["thread"]).to be_nil
       context.data["thread"] = "t2"
       b2.release
     end
@@ -47,14 +47,14 @@ describe Steno::Context::FiberLocal do
 
   it "should store data local to fibers" do
     f2 = Fiber.new do
-      context.data["fiber"].should be_nil
+      expect(context.data["fiber"]).to be_nil
       context.data["fiber"] = "f2"
     end
 
     f1 = Fiber.new do
       context.data["fiber"] = "f1"
       f2.resume
-      context.data["fiber"].should == "f1"
+      expect(context.data["fiber"]).to eq("f1")
     end
 
     f1.resume

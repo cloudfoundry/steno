@@ -5,14 +5,14 @@ describe Steno::LogLevel do
   let(:debug_level) { Steno::LogLevel.new(:debug, 1) }
 
   it "should be comparable" do
-    (info_level > debug_level).should be_true
-    (debug_level > info_level).should be_false
-    (info_level == info_level).should be_true
+    expect(info_level > debug_level).to be_truthy
+    expect(debug_level > info_level).to be_falsey
+    expect(info_level == info_level).to be_truthy
   end
 
   describe "#to_s" do
     it "should return the name of the level" do
-      info_level.to_s.should == "info"
+      expect(info_level.to_s).to eq("info")
     end
   end
 

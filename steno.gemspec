@@ -28,10 +28,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency("yajl-ruby", "~> 1.0")
   gem.add_dependency("fluent-logger")
   
-  gem.add_development_dependency("ci_reporter")
   gem.add_development_dependency("rack-test")
   gem.add_development_dependency("rake")
-  gem.add_development_dependency("rspec")
+  gem.add_development_dependency("rspec", "~>3.4.0")
   
   if RUBY_PLATFORM=~ /mswin|mingw|cygwin/
     gem.platform      = Gem::Platform::CURRENT

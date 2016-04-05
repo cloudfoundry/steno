@@ -25,7 +25,7 @@ describe Steno::JsonPrettifier do
                    '--',
                    'message',                  # Log message
                    ].join("\s+") + "\n"
-      prettified.should match(exp_regex)
+      expect(prettified).to match(exp_regex)
     end
 
     it "should always use the largest src len to determine src column width" do
@@ -60,7 +60,7 @@ describe Steno::JsonPrettifier do
         src_col = prettified.match(regex)[1]
 
         max_src_len = [max_src_len, src.length].max
-        src_col.length.should == max_src_len
+        expect(src_col.length).to eq(max_src_len)
       end
     end
 
@@ -77,8 +77,8 @@ describe Steno::JsonPrettifier do
     end
 
     it "should work with a nil data field" do
-      line = prettifier.prettify_line(%@{"data":null}@)
-      line.should include(" - ")
+      line = prettifier.prettify_line('{"data":null}')
+      expect(line).to include(" - ")
     end
   end
 end

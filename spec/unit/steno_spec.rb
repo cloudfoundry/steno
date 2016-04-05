@@ -10,15 +10,15 @@ describe Steno do
   describe "#logger" do
     it "should return a new Steno::Logger instance" do
       logger = Steno.logger("test")
-      logger.should_not be_nil
-      logger.name.should == "test"
+      expect(logger).to_not be_nil
+      expect(logger.name).to eq("test")
     end
 
     it "should memoize loggers by name" do
       logger1 = Steno.logger("test")
       logger2 = Steno.logger("test")
 
-      logger1.object_id.should == logger2.object_id
+      expect(logger1.object_id).to eq(logger2.object_id)
     end
   end
 
@@ -26,28 +26,28 @@ describe Steno do
     it "should modify the levels of existing loggers that match the regex" do
       logger = Steno.logger("test")
 
-      logger.level.should == :info
+      expect(logger.level).to eq(:info)
 
       Steno.set_logger_regexp(/te/, :debug)
 
-      logger.level.should == :debug
+      expect(logger.level).to eq(:debug)
     end
 
     it "should modify the levels of new loggers after a regexp has been set" do
       Steno.set_logger_regexp(/te/, :debug)
 
-      Steno.logger("te").level.should == :debug
+      expect(Steno.logger("te").level).to eq(:debug)
     end
 
     it "should reset the levels of previously matching loggers when changed" do
       Steno.set_logger_regexp(/foo/, :debug)
 
       logger = Steno.logger("foo")
-      logger.level.should == :debug
+      expect(logger.level).to eq(:debug)
 
       Steno.set_logger_regexp(/bar/, :debug)
 
-      logger.level.should == :info
+      expect(logger.level).to eq(:info)
     end
   end
 
@@ -56,12 +56,12 @@ describe Steno do
       Steno.set_logger_regexp(/te/, :debug)
 
       logger = Steno.logger("test")
-      logger.level.should == :debug
+      expect(logger.level).to eq(:debug)
 
       Steno.clear_logger_regexp
 
-      logger.level.should == :info
-      Steno.logger_regexp.should be_nil
+      expect(logger.level).to eq(:info)
+      expect(Steno.logger_regexp).to be_nil
     end
   end
 
@@ -80,7 +80,7 @@ describe Steno do
         loggers.last.level = level
       end
 
-      Steno.logger_level_snapshot.should == expected
+      expect(Steno.logger_level_snapshot).to eq(expected)
     end
   end
 end

@@ -50,7 +50,7 @@ class Steno::JsonPrettifier
 
       exists = nil
       pred_meth = "check_#{field_name}".to_sym
-      if respond_to?(pred_meth)
+      if respond_to?(pred_meth, true)
         exists = send(pred_meth, record)
       elsif record.respond_to?(:has_key?)
         exists = record.has_key?(field_name)

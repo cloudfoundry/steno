@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe Steno::TaggedLogger do
   let(:sink) { NullSink.new }
   let(:logger) { Steno::Logger.new("test", [sink]) }
@@ -6,28 +8,28 @@ describe Steno::TaggedLogger do
 
   it "should add any user data to each log record" do
     tagged_logger.info("testing", "test" => "data")
-    sink.records.size.should == 1
-    sink.records[0].data.should == user_data.merge("test" => "data")
+    expect(sink.records.size).to eq(1)
+    expect(sink.records[0].data).to eq(user_data.merge("test" => "data"))
 
     tagged_logger.log_exception(RuntimeError.new("hi"))
-    sink.records.size.should == 2
-    sink.records[1].data.should == user_data.merge(:backtrace => nil)
+    expect(sink.records.size).to eq(2)
+    expect(sink.records[1].data).to eq(user_data.merge(:backtrace => nil))
   end
 
   it "should forward missing methods to the proxied logger" do
-    tagged_logger.level.should == :info
+    expect(tagged_logger.level).to eq(:info)
     tagged_logger.level = :warn
 
-    logger.level.should == :warn
+    expect(logger.level).to eq(:warn)
 
-    tagged_logger.level_active?(:info).should be_false
+    expect(tagged_logger.level_active?(:info)).to be_falsey
   end
 
   describe "#tag" do
     it "should return a new tagged logger with merged user-data" do
       tl = tagged_logger.tag("bar" => "baz")
-      tl.proxied_logger.should == logger
-      tl.user_data.should == user_data.merge("bar" => "baz")
+      expect(tl.proxied_logger).to eq(logger)
+      expect(tl.user_data).to eq(user_data.merge("bar" => "baz"))
     end
   end
 end

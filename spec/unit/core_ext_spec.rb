@@ -11,8 +11,8 @@ describe Module do
   describe "#logger" do
     it "should request a logger named after itself" do
       x = Foo.logger
-      x.should be_a(Steno::Logger)
-      x.name.should include("Foo")
+      expect(x).to be_a(Steno::Logger)
+      expect(x.name).to include("Foo")
     end
   end
 end
@@ -21,8 +21,8 @@ describe Class do
   describe "#logger" do
     it "should request a logger named after itself" do
       x = Foo::Bar.logger
-      x.should be_a(Steno::Logger)
-      x.name.should include("Foo::Bar")
+      expect(x).to be_a(Steno::Logger)
+      expect(x.name).to include("Foo::Bar")
     end
   end
 end
@@ -31,8 +31,8 @@ describe Object do
   describe "#logger" do
     it "should request a logger named after its class" do
       x = Foo::Bar.new.logger
-      x.should be_a(Steno::Logger)
-      x.name.should include("Foo::Bar")
+      expect(x).to be_a(Steno::Logger)
+      expect(x.name).to include("Foo::Bar")
     end
   end
 end

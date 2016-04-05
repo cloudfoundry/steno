@@ -11,27 +11,27 @@ describe Steno::Config do
         @log_path = "some_file"
 
         @mock_sink_file = double("sink")
-        @mock_sink_file.stub(:codec=)
-        Steno::Sink::IO.should_receive(:for_file).with(@log_path,
+        expect(@mock_sink_file).to receive(:codec=)
+        expect(Steno::Sink::IO).to receive(:for_file).with(@log_path,
                                                        :max_retries => 5)
         .and_return(@mock_sink_file)
 
         @mock_sink_eventlog = double("sink")
-        @mock_sink_eventlog.stub(:codec=)
-        @mock_sink_eventlog.should_receive(:open).with("test")
-        Steno::Sink::Eventlog.should_receive(:instance).twice()
+        expect(@mock_sink_eventlog).to receive(:codec=)
+        expect(@mock_sink_eventlog).to receive(:open).with("test")
+        expect(Steno::Sink::Eventlog).to receive(:instance).twice()
         .and_return(@mock_sink_eventlog)
       end
 
       after :each do
         @config = Steno::Config.from_hash(@hash)
 
-        @config.default_log_level.should == :debug2
-        @config.context.class.should == Steno::Context::Null
-        @config.codec.class.should == Steno::Codec::Json
+        expect(@config.default_log_level).to eq(:debug2)
+        expect(@config.context.class).to eq(Steno::Context::Null)
+        expect(@config.codec.class).to eq(Steno::Codec::Json)
 
-        @config.sinks.size.should == 2
-        @config.sinks.should =~ [@mock_sink_file, @mock_sink_eventlog]
+        expect(@config.sinks.size).to eq(2)
+        expect(@config.sinks).to match_array([@mock_sink_file, @mock_sink_eventlog])
       end
 
       it "should work for symbolized keys" do
@@ -61,27 +61,27 @@ describe Steno::Config do
         @log_path = "some_file"
 
         @mock_sink_file = double("sink")
-        @mock_sink_file.stub(:codec=)
-        Steno::Sink::IO.should_receive(:for_file).with(@log_path,
+        allow(@mock_sink_file).to receive(:codec=)
+        expect(Steno::Sink::IO).to receive(:for_file).with(@log_path,
                                                        :max_retries => 5)
         .and_return(@mock_sink_file)
 
         @mock_sink_syslog = double("sink")
-        @mock_sink_syslog.stub(:codec=)
-        @mock_sink_syslog.should_receive(:open).with("test")
-        Steno::Sink::Syslog.should_receive(:instance).twice()
+        expect(@mock_sink_syslog).to receive(:codec=)
+        expect(@mock_sink_syslog).to receive(:open).with("test")
+        expect(Steno::Sink::Syslog).to receive(:instance).twice()
         .and_return(@mock_sink_syslog)
       end
 
       after :each do
         @config = Steno::Config.from_hash(@hash)
 
-        @config.default_log_level.should == :debug2
-        @config.context.class.should == Steno::Context::Null
-        @config.codec.class.should == Steno::Codec::Json
+        expect(@config.default_log_level).to eq(:debug2)
+        expect(@config.context.class).to eq(Steno::Context::Null)
+        expect(@config.codec.class).to eq(Steno::Codec::Json)
 
-        @config.sinks.size.should == 2
-        @config.sinks.should =~ [@mock_sink_file, @mock_sink_syslog]
+        expect(@config.sinks.size).to eq(2)
+        expect(@config.sinks).to match_array([@mock_sink_file, @mock_sink_syslog])
       end
 
       it "should work for symbolized keys" do
@@ -123,75 +123,75 @@ describe Steno::Config do
 
       config = Steno::Config.from_file(@config_path)
 
-      config.sinks.size.should == 1
-      config.sinks[0].class.should == Steno::Sink::IO
+      expect(config.sinks.size).to eq(1)
+      expect(config.sinks[0].class).to eq(Steno::Sink::IO)
 
-      config.default_log_level.should == :info
+      expect(config.default_log_level).to eq(:info)
 
-      config.context.class.should == Steno::Context::Null
+      expect(config.context.class).to eq(Steno::Context::Null)
 
-      config.codec.class.should == Steno::Codec::Json
-      config.codec.iso8601_timestamps?.should == false
+      expect(config.codec.class).to eq(Steno::Codec::Json)
+      expect(config.codec.iso8601_timestamps?).to eq(false)
     end
 
     it "should configure json codec with readable dates if iso8601_timestamps is true" do
       write_config(@config_path, {"iso8601_timestamps" => "true"})
       config = Steno::Config.from_file(@config_path)
-      config.codec.class.should == Steno::Codec::Json
-      config.codec.iso8601_timestamps?.should == true
+      expect(config.codec.class).to eq(Steno::Codec::Json)
+      expect(config.codec.iso8601_timestamps?).to eq(true)
     end
 
     it "should set the default_log_level if a key with the same name is supplied" do
       write_config(@config_path, {"level" => "debug2"})
-      Steno::Config.from_file(@config_path).default_log_level.should == :debug2
+      expect(Steno::Config.from_file(@config_path).default_log_level).to eq(:debug2)
 
       write_config(@config_path, {"default_log_level" => "debug2"})
-      Steno::Config.from_file(@config_path).default_log_level.should == :debug2
+      expect(Steno::Config.from_file(@config_path).default_log_level).to eq(:debug2)
     end
 
     it "should read the 'level' key if both default_log_level and level are spscified" do
       write_config(@config_path, {"level" => "debug2",
                                   "default_log_level" => "warn"})
-      Steno::Config.from_file(@config_path).default_log_level.should == :debug2
+      expect(Steno::Config.from_file(@config_path).default_log_level).to eq(:debug2)
     end
 
     it "should add a file sink if the 'file' key is specified" do
       write_config(@config_path, {"file" => @log_path, "max_retries" => 2})
       mock_sink = double("sink")
-      mock_sink.stub(:codec=)
+      expect(mock_sink).to receive(:codec=)
 
-      Steno::Sink::IO.should_receive(:for_file).
+      expect(Steno::Sink::IO).to receive(:for_file).
           with(@log_path, :max_retries => 2).and_return(mock_sink)
       config = Steno::Config.from_file(@config_path)
-      config.sinks.size.should == 1
-      config.sinks[0].should == mock_sink
+      expect(config.sinks.size).to eq(1)
+      expect(config.sinks[0]).to eq(mock_sink)
     end
 
     if Steno::Sink::WINDOWS
       it "should add a event sink if the 'eventlog' key is specified" do
         write_config(@config_path, {"eventlog" => "test"})
         mock_sink = double("sink")
-        mock_sink.should_receive(:open).with("test")
-        mock_sink.stub(:codec=)
+        expect(mock_sink).to receive(:open).with("test")
+        expect(mock_sink).to receive(:codec=)
 
-        Steno::Sink::Eventlog.should_receive(:instance).twice().and_return(mock_sink)
+        expect(Steno::Sink::Eventlog).to receive(:instance).twice().and_return(mock_sink)
 
         config = Steno::Config.from_file(@config_path)
-        config.sinks.size.should == 1
-        config.sinks[0].should == mock_sink
+        expect(config.sinks.size).to eq(1)
+        expect(config.sinks[0]).to eq(mock_sink)
       end
     else
       it "should add a syslog sink if the 'syslog' key is specified" do
         write_config(@config_path, {"syslog" => "test"})
         mock_sink = double("sink")
-        mock_sink.should_receive(:open).with("test")
-        mock_sink.stub(:codec=)
+        expect(mock_sink).to receive(:open).with("test")
+        expect(mock_sink).to receive(:codec=)
 
-        Steno::Sink::Syslog.should_receive(:instance).twice().and_return(mock_sink)
+        expect(Steno::Sink::Syslog).to receive(:instance).twice().and_return(mock_sink)
 
         config = Steno::Config.from_file(@config_path)
-        config.sinks.size.should == 1
-        config.sinks[0].should == mock_sink
+        expect(config.sinks.size).to eq(1)
+        expect(config.sinks[0]).to eq(mock_sink)
       end
     end
 
@@ -200,13 +200,13 @@ describe Steno::Config do
     it "should add an io sink to stdout if no sinks are explicitly specified in the config file" do
       write_config(@config_path, {})
       mock_sink = double("sink")
-      mock_sink.stub(:codec=)
+      expect(mock_sink).to receive(:codec=)
 
-      Steno::Sink::IO.should_receive(:new).with(STDOUT).and_return(mock_sink)
+      expect(Steno::Sink::IO).to receive(:new).with(STDOUT).and_return(mock_sink)
 
       config = Steno::Config.from_file(@config_path)
-      config.sinks.size.should == 1
-      config.sinks[0].should == mock_sink
+      expect(config.sinks.size).to eq(1)
+      expect(config.sinks[0]).to eq(mock_sink)
     end
 
     it "should merge supplied overrides with the file based config" do
@@ -216,8 +216,8 @@ describe Steno::Config do
       config = Steno::Config.from_file(@config_path,
                                        :default_log_level => "warn",
                                        :context => context)
-      config.context.should == context
-      config.default_log_level.should == :warn
+      expect(config.context).to eq(context)
+      expect(config.default_log_level).to eq(:warn)
     end
   end
 
