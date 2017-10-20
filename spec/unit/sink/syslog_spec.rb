@@ -64,6 +64,30 @@ unless Steno::Sink::WINDOWS
 
         sink.add_record(record_with_big_message)
       end
+
+      context "when level is off" do
+        let(:level) do
+          Steno::Logger.lookup_level(:off)
+        end
+
+        it "should not write out logs" do
+          identity = "test"
+
+          syslog = double("syslog", facility: nil, log: nil)
+          expect(Syslog).to receive(:open).and_return(syslog)
+
+          sink = Steno::Sink::Syslog.instance
+          sink.open(identity)
+
+          codec = double("codec", encode_record: nil)
+          sink.codec = codec
+
+          sink.add_record(record)
+
+          expect(codec).to_not have_received(:encode_record)
+          expect(syslog).to_not have_received(:log)
+        end
+      end
     end
 
     describe "#flush" do

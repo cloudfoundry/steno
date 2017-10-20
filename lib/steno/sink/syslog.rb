@@ -36,6 +36,7 @@ unless Steno::Sink::WINDOWS
     end
 
     def add_record(record)
+      return if record.log_level == :off
       record = truncate_record(record)
       msg = @codec.encode_record(record)
       pri = LOG_LEVEL_MAP[record.log_level]
