@@ -1,4 +1,4 @@
-require "steno/sink/base"
+require 'steno/sink/base'
 
 module Steno
   module Sink
@@ -6,7 +6,6 @@ module Steno
 end
 
 class Steno::Sink::Counter < Steno::Sink::Base
-
   def initialize
     # Map of String -> numeric count
     @counts = {}
@@ -17,17 +16,14 @@ class Steno::Sink::Counter < Steno::Sink::Base
     level = record.log_level.to_s
 
     @mutex.synchronize do
-      unless @counts[level]
-        @counts[level] = 0
-      end
+      @counts[level] = 0 unless @counts[level]
       @counts[level] += 1
     end
   end
 
-  def flush
-  end
+  def flush; end
 
-  def to_json
+  def to_json(*_args)
     hash = {}
     @mutex.synchronize do
       Steno::Logger::LEVELS.keys.each do |level_name|

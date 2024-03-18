@@ -1,5 +1,5 @@
-require "rbconfig"
-require "thread"
+require 'rbconfig'
+require 'thread'
 
 module Steno
   module Sink
@@ -10,7 +10,6 @@ end
 # Sinks represent the final destination for log records. They abstract storage
 # mediums (like files) and transport layers (like sockets).
 class Steno::Sink::Base
-
   attr_accessor :codec
 
   # @param [Steno::Codec::Base] formatter Transforms log records to their

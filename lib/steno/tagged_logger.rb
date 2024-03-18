@@ -1,11 +1,10 @@
-require "steno/logger"
+require 'steno/logger'
 
 module Steno
 end
 
 # Provides a proxy that allows persistent user data
 class Steno::TaggedLogger
-
   attr_reader :proxied_logger
   attr_accessor :user_data
 
@@ -18,7 +17,7 @@ class Steno::TaggedLogger
     end
 
     def define_logf_method(name)
-      define_method(name.to_s + "f") { |fmt, *args| log(name, fmt % args) }
+      define_method(name.to_s + 'f') { |fmt, *args| log(name, fmt % args) }
     end
   end
 

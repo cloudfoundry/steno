@@ -1,4 +1,4 @@
-require "steno/sink/base"
+require 'steno/sink/base'
 
 module Steno
   module Sink
@@ -16,15 +16,13 @@ class Steno::Sink::IO < Steno::Sink::Base
     # @return [Steno::Sink::IO]
     def for_file(path, opts = {})
       autoflush = true
-      if opts.include?(:autoflush)
-        autoflush = opts[:autoflush]
-      end
+      autoflush = opts[:autoflush] if opts.include?(:autoflush)
 
-      io = File.open(path, "a+")
+      io = File.open(path, 'a+')
 
       io.sync = autoflush
 
-      new(io, :max_retries => opts[:max_retries])
+      new(io, max_retries: opts[:max_retries])
     end
   end
 
@@ -52,12 +50,10 @@ class Steno::Sink::IO < Steno::Sink::Base
       begin
         @io.write(bytes)
       rescue IOError => e
-        if retries < @max_retries
-          retries += 1
-          retry
-        else
-          raise e
-        end
+        raise e unless retries < @max_retries
+
+        retries += 1
+        retry
       end
     end
 

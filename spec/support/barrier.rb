@@ -1,4 +1,4 @@
-require "thread"
+require 'thread'
 
 class Barrier
   def initialize
@@ -16,7 +16,7 @@ class Barrier
 
   def wait
     @lock.synchronize do
-      @cvar.wait(@lock) if !@done
+      @cvar.wait(@lock) unless @done
     end
   end
 end

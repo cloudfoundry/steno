@@ -4,8 +4,7 @@ end
 class Steno::LogLevel
   include Comparable
 
-  attr_reader :name
-  attr_reader :priority
+  attr_reader :name, :priority
 
   # @param [String]  name      "info", "debug", etc.
   # @param [Integer] priority  "info" > "debug", etc.

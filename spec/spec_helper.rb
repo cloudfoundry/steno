@@ -1,6 +1,6 @@
-require "rack/test"
-require "rspec"
+require 'rack/test'
+require 'rspec'
 
-require "steno"
+require 'steno'
 
-Dir["./spec/support/**/*.rb"].each { |file| require file }
+Dir['./spec/support/**/*.rb'].each { |file| require file }

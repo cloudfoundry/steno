@@ -1,22 +1,12 @@
-require "digest/md5"
-require "thread"
+require 'digest/md5'
+require 'thread'
 
 module Steno
 end
 
 class Steno::Record
-
-  attr_reader :timestamp
-  attr_reader :message
-  attr_reader :log_level
-  attr_reader :source
-  attr_reader :data
-  attr_reader :thread_id
-  attr_reader :fiber_id
-  attr_reader :process_id
-  attr_reader :file
-  attr_reader :lineno
-  attr_reader :method
+  attr_reader :timestamp, :message, :log_level, :source, :data, :thread_id, :fiber_id, :process_id, :file, :lineno,
+              :method
 
   # @param [String] source  Identifies message source.
   # @param [Symbol] log_level
@@ -25,7 +15,7 @@ class Steno::Record
   #        Format is [<filename>, <lineno>, <method>].
   # @param [Hash]   data       User-supplied data
   def initialize(source, log_level, message, loc = [], data = {})
-    raise "Log level must be a Symbol" unless log_level.is_a? Symbol
+    raise 'Log level must be a Symbol' unless log_level.is_a? Symbol
 
     @timestamp  = Time.now
     @source     = source
