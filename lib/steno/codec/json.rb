@@ -1,6 +1,6 @@
-require "yajl"
+require 'yajl'
 
-require "steno/codec/base"
+require 'steno/codec/base'
 
 module Steno
   module Codec
@@ -8,7 +8,6 @@ module Steno
 end
 
 class Steno::Codec::Json < Steno::Codec::Base
-
   def initialize(opts = {})
     @iso8601_timestamps = opts[:iso8601_timestamps] || false
   end
@@ -19,28 +18,26 @@ class Steno::Codec::Json < Steno::Codec::Base
         record.message
       else
         # Treat the message as an arbitrary sequence of bytes.
-        escape_nonprintable_ascii(record.message.dup.force_encoding("BINARY"))
+        escape_nonprintable_ascii(record.message.dup.force_encoding('BINARY'))
       end
 
     h = {
-      "timestamp"  => record.timestamp.to_f,
-      "message"    => msg,
-      "log_level"  => record.log_level.to_s,
-      "source"     => record.source,
-      "data"       => record.data,
-      "thread_id"  => record.thread_id,
-      "fiber_id"   => record.fiber_id,
-      "process_id" => record.process_id,
-      "file"       => record.file,
-      "lineno"     => record.lineno,
-      "method"     => record.method,
+      'timestamp' => record.timestamp.to_f,
+      'message' => msg,
+      'log_level' => record.log_level.to_s,
+      'source' => record.source,
+      'data' => record.data,
+      'thread_id' => record.thread_id,
+      'fiber_id' => record.fiber_id,
+      'process_id' => record.process_id,
+      'file' => record.file,
+      'lineno' => record.lineno,
+      'method' => record.method
     }
 
-    if iso8601_timestamps?
-      h["timestamp"] = Time.at(record.timestamp).utc.iso8601(6)
-    end
+    h['timestamp'] = Time.at(record.timestamp).utc.iso8601(6) if iso8601_timestamps?
 
-     Yajl::Encoder.encode(h) + "\n"
+    Yajl::Encoder.encode(h) + "\n"
   end
 
   def iso8601_timestamps?

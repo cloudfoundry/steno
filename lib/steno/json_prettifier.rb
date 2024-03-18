@@ -1,6 +1,6 @@
-require "digest/md5"
-require "set"
-require "yajl"
+require 'digest/md5'
+require 'set'
+require 'yajl'
 
 module Steno
 end
@@ -24,7 +24,7 @@ class Steno::JsonPrettifier
   end
 
   def initialize(excluded_fields = [])
-    @time_format = "%Y-%m-%d %H:%M:%S.%6N"
+    @time_format = '%Y-%m-%d %H:%M:%S.%6N'
     @excluded_fields = Set.new(excluded_fields)
     @max_src_len = MIN_COL_WIDTH
   end
@@ -49,7 +49,7 @@ class Steno::JsonPrettifier
       next if @excluded_fields.include?(field_name)
 
       exists = nil
-      pred_meth = "check_#{field_name}".to_sym
+      pred_meth = :"check_#{field_name}"
       if respond_to?(pred_meth, true)
         exists = send(pred_meth, record)
       elsif record.respond_to?(:has_key?)
@@ -59,35 +59,35 @@ class Steno::JsonPrettifier
         raise ParseError, msg
       end
 
-      if exists
-        fields << send("format_#{field_name}".to_sym, record)
-      else
-        fields << "-"
-      end
+      fields << if exists
+                  send(:"format_#{field_name}", record)
+                else
+                  '-'
+                end
     end
 
-    fields.join(" ") + "\n"
+    fields.join(' ') + "\n"
   end
 
   def format_timestamp(record)
-    Time.at(record["timestamp"]).strftime(@time_format)
+    Time.at(record['timestamp']).strftime(@time_format)
   end
 
   def format_source(record)
-    @max_src_len = [@max_src_len, record["source"].length].max
-    record["source"].ljust(@max_src_len)
+    @max_src_len = [@max_src_len, record['source'].length].max
+    record['source'].ljust(@max_src_len)
   end
 
   def format_process_id(record)
-    "pid=%-5s" % [record["process_id"]]
+    format('pid=%-5s', record['process_id'])
   end
 
   def format_thread_id(record)
-    "tid=%s" % [shortid(record["thread_id"])]
+    format('tid=%s', shortid(record['thread_id']))
   end
 
   def format_fiber_id(record)
-    "fid=%s" % [shortid(record["fiber_id"])]
+    format('fid=%s', shortid(record['fiber_id']))
   end
 
   def check_location(record)
@@ -95,36 +95,37 @@ class Steno::JsonPrettifier
   end
 
   def format_location(record)
-    parts = record["file"].split("/")
+    parts = record['file'].split('/')
 
     trimmed_filename = nil
-    if parts.size == 1
-      trimmed_filename = parts[0]
-    else
-      trimmed_filename = parts.slice(-2, 2).join("/")
-    end
+    trimmed_filename = if parts.size == 1
+                         parts[0]
+                       else
+                         parts.slice(-2, 2).join('/')
+                       end
 
-    "%s/%s:%s" % [trimmed_filename, record["method"], record["lineno"]]
+    format('%s/%s:%s', trimmed_filename, record['method'], record['lineno'])
   end
 
   def check_data(record)
-    record["data"].is_a?(Hash)
+    record['data'].is_a?(Hash)
   end
 
   def format_data(record)
-    record["data"].map { |k, v| "#{k}=#{v}" }.join(",")
+    record['data'].map { |k, v| "#{k}=#{v}" }.join(',')
   end
 
   def format_log_level(record)
-    "%7s" % [record["log_level"].upcase]
+    format('%7s', record['log_level'].upcase)
   end
 
   def format_message(record)
-    "-- %s" % [record["message"]]
+    format('-- %s', record['message'])
   end
 
   def shortid(data)
-    return "-" if data.nil?
+    return '-' if data.nil?
+
     digest = Digest::MD5.hexdigest(data.to_s)
     digest[0, 4]
   end

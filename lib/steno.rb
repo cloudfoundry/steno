@@ -1,21 +1,19 @@
-require "thread"
+require 'thread'
 
-require "steno/codec"
-require "steno/config"
-require "steno/context"
-require "steno/errors"
-require "steno/log_level"
-require "steno/logger"
-require "steno/tagged_logger"
-require "steno/record"
-require "steno/sink"
-require "steno/version"
+require 'steno/codec'
+require 'steno/config'
+require 'steno/context'
+require 'steno/errors'
+require 'steno/log_level'
+require 'steno/logger'
+require 'steno/tagged_logger'
+require 'steno/record'
+require 'steno/sink'
+require 'steno/version'
 
 module Steno
   class << self
-
-    attr_reader :config
-    attr_reader :logger_regexp
+    attr_reader :config, :logger_regexp
 
     # Initializes the logging system. This must be called exactly once before
     # attempting to use any Steno class methods.
@@ -48,8 +46,8 @@ module Steno
           level = compute_level(name)
 
           logger = Steno::Logger.new(name, @config.sinks,
-                                     :level => level,
-                                     :context => @config.context)
+                                     level: level,
+                                     context: @config.context)
 
           @loggers[name] = logger
         end
@@ -92,9 +90,7 @@ module Steno
         return if @logger_regexp.nil?
 
         @loggers.each do |name, logger|
-          if name =~ @logger_regexp
-            logger.level = @config.default_log_level
-          end
+          logger.level = @config.default_log_level if name =~ @logger_regexp
         end
 
         @logger_regexp = nil
@@ -103,7 +99,6 @@ module Steno
 
       nil
     end
-
 
     # @return [Hash] Map of logger name => level
     def logger_level_snapshot

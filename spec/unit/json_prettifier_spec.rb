@@ -1,15 +1,15 @@
-require "spec_helper"
+require 'spec_helper'
 
-require "steno/json_prettifier"
+require 'steno/json_prettifier'
 
 describe Steno::JsonPrettifier do
   let(:prettifier) { Steno::JsonPrettifier.new }
   let(:codec) { Steno::Codec::Json.new }
 
-  describe "#prettify_line" do
-    it "should return a properly formatted string" do
-      record = Steno::Record.new("test", :info, "message",
-                                 ["filename", "line", "method"], "test" => "data")
+  describe '#prettify_line' do
+    it 'returns a properly formatted string' do
+      record = Steno::Record.new('test', :info, 'message',
+                                 %w[filename line method], 'test' => 'data')
       encoded = codec.encode_record(record)
       prettified = prettifier.prettify_line(encoded)
 
@@ -23,16 +23,16 @@ describe Steno::JsonPrettifier do
                    'test=data',                # User supplied data
                    'INFO',                     # Level
                    '--',
-                   'message',                  # Log message
+                   'message' # Log message
                    ].join("\s+") + "\n"
       expect(prettified).to match(exp_regex)
     end
 
-    it "should always use the largest src len to determine src column width" do
+    it 'alwayses use the largest src len to determine src column width' do
       test_srcs = [
         'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH - 3),
         'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH - 1),
-        'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH),
+        'a' * Steno::JsonPrettifier::MIN_COL_WIDTH,
         'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH + 1),
         'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH - 3),
         'a' * (Steno::JsonPrettifier::MIN_COL_WIDTH + 3),
@@ -51,9 +51,9 @@ describe Steno::JsonPrettifier do
       test_srcs.each do |src|
         record = Steno::Record.new(src,
                                    :info,
-                                   "message",
-                                   ["filename", "line", "method"],
-                                   "test" => "data")
+                                   'message',
+                                   %w[filename line method],
+                                   'test' => 'data')
 
         encoded = codec.encode_record(record)
         prettified = prettifier.prettify_line(encoded)
@@ -64,21 +64,21 @@ describe Steno::JsonPrettifier do
       end
     end
 
-    it "should raise a parse error when the json-encoded string is not a hash" do
-      expect {
-        prettifier.prettify_line("[1,2,3]")
-      }.to raise_error(Steno::JsonPrettifier::ParseError)
+    it 'raises a parse error when the json-encoded string is not a hash' do
+      expect do
+        prettifier.prettify_line('[1,2,3]')
+      end.to raise_error(Steno::JsonPrettifier::ParseError)
     end
 
-    it "should raise a parse error when the json-encoded string is malformed" do
-      expect {
-        prettifier.prettify_line("blah")
-      }.to raise_error(Steno::JsonPrettifier::ParseError)
+    it 'raises a parse error when the json-encoded string is malformed' do
+      expect do
+        prettifier.prettify_line('blah')
+      end.to raise_error(Steno::JsonPrettifier::ParseError)
     end
 
-    it "should work with a nil data field" do
+    it 'works with a nil data field' do
       line = prettifier.prettify_line('{"data":null}')
-      expect(line).to include(" - ")
+      expect(line).to include(' - ')
     end
   end
 end

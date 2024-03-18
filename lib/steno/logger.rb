@@ -1,22 +1,22 @@
-require "thread"
+require 'thread'
 
-require "steno/errors"
-require "steno/log_level"
+require 'steno/errors'
+require 'steno/log_level'
 
 module Steno
 end
 
 class Steno::Logger
   LEVELS = {
-    :off    => Steno::LogLevel.new(:off,     0),
-    :fatal  => Steno::LogLevel.new(:fatal,   1),
-    :error  => Steno::LogLevel.new(:error,   5),
-    :warn   => Steno::LogLevel.new(:warn,   10),
-    :info   => Steno::LogLevel.new(:info,   15),
-    :debug  => Steno::LogLevel.new(:debug,  16),
-    :debug1 => Steno::LogLevel.new(:debug1, 17),
-    :debug2 => Steno::LogLevel.new(:debug2, 18),
-    :all    => Steno::LogLevel.new(:all,    30),
+    off: Steno::LogLevel.new(:off, 0),
+    fatal: Steno::LogLevel.new(:fatal,   1),
+    error: Steno::LogLevel.new(:error,   5),
+    warn: Steno::LogLevel.new(:warn,   10),
+    info: Steno::LogLevel.new(:info,   15),
+    debug: Steno::LogLevel.new(:debug, 16),
+    debug1: Steno::LogLevel.new(:debug1, 17),
+    debug2: Steno::LogLevel.new(:debug2, 18),
+    all: Steno::LogLevel.new(:all, 30)
   }
 
   class << self
@@ -28,19 +28,17 @@ class Steno::Logger
     end
 
     def define_logf_method(name)
-      define_method(name.to_s + "f") { |fmt, *args| log(name, fmt % args) }
+      define_method(name.to_s + 'f') { |fmt, *args| log(name, fmt % args) }
     end
 
     def define_level_active_predicate(name)
-      define_method(name.to_s + "?") { level_active?(name) }
+      define_method(name.to_s + '?') { level_active?(name) }
     end
 
     def lookup_level(name)
       level = LEVELS[name]
 
-      if level.nil?
-        raise Steno::Error.new("Unknown level: #{name}")
-      end
+      raise Steno::Error.new("Unknown level: #{name}") if level.nil?
 
       level
     end
@@ -85,8 +83,6 @@ class Steno::Logger
     level = self.class.lookup_level(level_name)
 
     @min_level_lock.synchronize { @min_level = level }
-
-    nil
   end
 
   # Returns the name of the current log level
@@ -113,7 +109,7 @@ class Steno::Logger
 
   # @return [nil]
   def log_exception(ex, user_data = {})
-    warn("Caught exception: #{ex}", user_data.merge(:backtrace => ex.backtrace))
+    warn("Caught exception: #{ex}", user_data.merge(backtrace: ex.backtrace))
   end
 
   # Adds a record to the configured sinks.
@@ -123,7 +119,7 @@ class Steno::Logger
   # @param [Hash] user_data
   #
   # @return [nil]
-  def log(level_name, message = nil, user_data = nil, &blk)
+  def log(level_name, message = nil, user_data = nil)
     return unless level_active?(level_name)
 
     message = yield if block_given?
@@ -153,18 +149,18 @@ class Steno::Logger
   private
 
   def parse_record_loc(callstack)
-    file, lineno, method = nil, nil, nil
+    file = nil
+    lineno = nil
+    method = nil
 
     callstack.each do |frame|
       next if frame =~ /logger\.rb/
 
-      file, lineno, method = frame.split(":")
+      file, lineno, method = frame.split(':')
 
       lineno = lineno.to_i
 
-      if method =~ /in `([^']+)/
-        method = $1
-      end
+      method = ::Regexp.last_match(1) if method =~ /in `([^']+)/
 
       break
     end

@@ -1,9 +1,9 @@
-require "yaml"
+require 'yaml'
 
-require "steno/codec"
-require "steno/context"
-require "steno/logger"
-require "steno/sink"
+require 'steno/codec'
+require 'steno/context'
+require 'steno/logger'
+require 'steno/sink'
 
 module Steno
 end
@@ -23,7 +23,7 @@ class Steno::Config
     # @return [Steno::Config]
     def from_file(path, overrides = {})
       h = YAML.load_file(path)
-      h = h["logging"] || {}
+      h = h['logging'] || {}
       new(to_config_hash(h).merge(overrides))
     end
 
@@ -37,17 +37,15 @@ class Steno::Config
 
       level = hash[:level] || hash[:default_log_level]
       opts = {
-        :sinks => [],
-        :default_log_level => level.nil? ? :info : level.to_sym
+        sinks: [],
+        default_log_level: level.nil? ? :info : level.to_sym
       }
 
-      if hash[:iso8601_timestamps]
-        opts[:codec] = Steno::Codec::Json.new(:iso8601_timestamps => true)
-      end
+      opts[:codec] = Steno::Codec::Json.new(iso8601_timestamps: true) if hash[:iso8601_timestamps]
 
       if hash[:file]
         max_retries = hash[:max_retries]
-        opts[:sinks] << Steno::Sink::IO.for_file(hash[:file], :max_retries => max_retries)
+        opts[:sinks] << Steno::Sink::IO.for_file(hash[:file], max_retries: max_retries)
       end
 
       if Steno::Sink::WINDOWS
@@ -55,20 +53,14 @@ class Steno::Config
           Steno::Sink::Eventlog.instance.open(hash[:eventlog])
           opts[:sinks] << Steno::Sink::Eventlog.instance
         end
-      else
-        if hash[:syslog]
-          Steno::Sink::Syslog.instance.open(hash[:syslog])
-          opts[:sinks] << Steno::Sink::Syslog.instance
-        end
+      elsif hash[:syslog]
+        Steno::Sink::Syslog.instance.open(hash[:syslog])
+        opts[:sinks] << Steno::Sink::Syslog.instance
       end
 
-      if hash[:fluentd]
-        opts[:sinks] << Steno::Sink::Fluentd.new(hash[:fluentd])
-      end
+      opts[:sinks] << Steno::Sink::Fluentd.new(hash[:fluentd]) if hash[:fluentd]
 
-      if opts[:sinks].empty?
-        opts[:sinks] << Steno::Sink::IO.new(STDOUT)
-      end
+      opts[:sinks] << Steno::Sink::IO.new(STDOUT) if opts[:sinks].empty?
 
       opts
     end
@@ -78,23 +70,20 @@ class Steno::Config
     end
   end
 
-  attr_reader :sinks
-  attr_reader :codec
-  attr_reader :context
-  attr_reader :default_log_level
+  attr_reader :sinks, :codec, :context, :default_log_level
 
   def initialize(opts = {})
     @sinks             = opts[:sinks] || []
     @codec             = opts[:codec] || Steno::Codec::Json.new
-    @context           = opts[:context] ||Steno::Context::Null.new
+    @context           = opts[:context] || Steno::Context::Null.new
 
     @sinks.each { |sink| sink.codec = @codec }
 
-    if opts[:default_log_level]
-      @default_log_level = opts[:default_log_level].to_sym
-    else
-      @default_log_level = :info
-    end
+    @default_log_level = if opts[:default_log_level]
+                           opts[:default_log_level].to_sym
+                         else
+                           :info
+                         end
   end
 
   private_class_method :symbolize_keys

@@ -1,7 +1,7 @@
-shared_context :steno_context do
-  it "should support clearing context local data" do
-    context.data["test"] = "value"
+shared_examples 'steno context' do
+  it 'supports clearing context local data' do
+    context.data['test'] = 'value'
     context.clear
-    expect(context.data["test"]).to be_nil
+    expect(context.data['test']).to be_nil
   end
 end
