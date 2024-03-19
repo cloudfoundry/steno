@@ -9,10 +9,10 @@ end
 class Steno::Logger
   LEVELS = {
     off: Steno::LogLevel.new(:off, 0),
-    fatal: Steno::LogLevel.new(:fatal,   1),
-    error: Steno::LogLevel.new(:error,   5),
-    warn: Steno::LogLevel.new(:warn,   10),
-    info: Steno::LogLevel.new(:info,   15),
+    fatal: Steno::LogLevel.new(:fatal, 1),
+    error: Steno::LogLevel.new(:error, 5),
+    warn: Steno::LogLevel.new(:warn, 10),
+    info: Steno::LogLevel.new(:info, 15),
     debug: Steno::LogLevel.new(:debug, 16),
     debug1: Steno::LogLevel.new(:debug1, 17),
     debug2: Steno::LogLevel.new(:debug2, 18),
@@ -60,18 +60,21 @@ class Steno::Logger
 
   attr_reader :name
 
-  # @param [String] name The logger name.
+  # @param [String] name  The logger name.
   # @param [Array<Steno::Sink::Base>] sinks
   # @param [Hash] opts
   # @option opts [Symbol] :level  The minimum level for which this logger will
   #         emit log records. Defaults to :info.
   # @option opts [Steno::Context] :context
+  # @option opts [Regex] :ignored_locations  User specified regex matching
+  #         ignored locations.
   def initialize(name, sinks, opts = {})
-    @name           = name
-    @min_level      = self.class.lookup_level(opts[:level] || :info)
-    @min_level_lock = Mutex.new
-    @sinks          = sinks
-    @context        = opts[:context] || Steno::Context::Null.new
+    @name              = name
+    @min_level         = self.class.lookup_level(opts[:level] || :info)
+    @min_level_lock    = Mutex.new
+    @sinks             = sinks
+    @context           = opts[:context] || Steno::Context::Null.new
+    @ignored_locations = opts[:ignored_locations]
   end
 
   # Sets the minimum level for which records will be added to sinks.
@@ -114,7 +117,7 @@ class Steno::Logger
 
   # Adds a record to the configured sinks.
   #
-  # @param [Symbol] level_name    The level associated with the record
+  # @param [Symbol] level_name  The level associated with the record
   # @param [String] message
   # @param [Hash] user_data
   #
@@ -124,7 +127,7 @@ class Steno::Logger
 
     message = yield if block_given?
 
-    callstack = caller
+    callstack = Kernel.caller
     loc = parse_record_loc(callstack)
 
     data = @context.data.merge(user_data || {})
@@ -149,22 +152,16 @@ class Steno::Logger
   private
 
   def parse_record_loc(callstack)
-    file = nil
-    lineno = nil
-    method = nil
+    frame = callstack.find { |f| !(f =~ /logger\.rb/ || ignored_location?(f)) } || callstack.last
 
-    callstack.each do |frame|
-      next if frame =~ /logger\.rb/
-
-      file, lineno, method = frame.split(':')
-
-      lineno = lineno.to_i
-
-      method = ::Regexp.last_match(1) if method =~ /in `([^']+)/
-
-      break
-    end
+    file, lineno, method = frame.split(':')
+    lineno = lineno.to_i
+    method = ::Regexp.last_match(1) if method =~ /in `([^`']+)/
 
     [file, lineno, method]
+  end
+
+  def ignored_location?(frame)
+    !@ignored_locations.nil? && frame =~ @ignored_locations
   end
 end

@@ -70,12 +70,13 @@ class Steno::Config
     end
   end
 
-  attr_reader :sinks, :codec, :context, :default_log_level
+  attr_reader :sinks, :codec, :context, :ignored_locations, :default_log_level
 
   def initialize(opts = {})
     @sinks             = opts[:sinks] || []
     @codec             = opts[:codec] || Steno::Codec::Json.new
     @context           = opts[:context] || Steno::Context::Null.new
+    @ignored_locations = opts[:ignored_locations]
 
     @sinks.each { |sink| sink.codec = @codec }
 

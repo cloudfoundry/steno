@@ -27,6 +27,7 @@ describe Steno::Config do
 
         expect(@config.default_log_level).to eq(:debug2)
         expect(@config.context.class).to eq(Steno::Context::Null)
+        expect(@config.ignored_locations).to eq(nil)
         expect(@config.codec.class).to eq(Steno::Codec::Json)
 
         expect(@config.sinks.size).to eq(2)
@@ -76,6 +77,7 @@ describe Steno::Config do
 
         expect(@config.default_log_level).to eq(:debug2)
         expect(@config.context.class).to eq(Steno::Context::Null)
+        expect(@config.ignored_locations).to eq(nil)
         expect(@config.codec.class).to eq(Steno::Codec::Json)
 
         expect(@config.sinks.size).to eq(2)
@@ -126,6 +128,8 @@ describe Steno::Config do
       expect(config.default_log_level).to eq(:info)
 
       expect(config.context.class).to eq(Steno::Context::Null)
+
+      expect(config.ignored_locations).to eq(nil)
 
       expect(config.codec.class).to eq(Steno::Codec::Json)
       expect(config.codec.iso8601_timestamps?).to eq(false)
@@ -208,10 +212,13 @@ describe Steno::Config do
       write_config(@config_path, { 'default_log_level' => 'debug' })
 
       context = Steno::Context::ThreadLocal.new
+      ignored_locations = /location-to-ignore/
       config = Steno::Config.from_file(@config_path,
                                        default_log_level: 'warn',
-                                       context: context)
+                                       context: context,
+                                       ignored_locations: ignored_locations)
       expect(config.context).to eq(context)
+      expect(config.ignored_locations).to eq(ignored_locations)
       expect(config.default_log_level).to eq(:warn)
     end
   end

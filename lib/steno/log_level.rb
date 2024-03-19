@@ -6,7 +6,7 @@ class Steno::LogLevel
 
   attr_reader :name, :priority
 
-  # @param [String]  name      "info", "debug", etc.
+  # @param [Symbol]  name      :info, :debug, etc.
   # @param [Integer] priority  "info" > "debug", etc.
   def initialize(name, priority)
     @name = name

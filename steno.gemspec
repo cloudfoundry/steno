@@ -28,7 +28,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency('rack-test')
   gem.add_development_dependency('rake')
-  gem.add_development_dependency('rspec', '~>3.13.0')
+  gem.add_development_dependency('rspec', '~> 3.13.0')
   gem.add_development_dependency('rubocop', '~> 1.62.0')
   gem.add_development_dependency('rubocop-rake', '~> 0.6.0')
   gem.add_development_dependency('rubocop-rspec', '~> 2.27.0')

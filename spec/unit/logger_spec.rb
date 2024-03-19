@@ -43,22 +43,23 @@ describe Steno::Logger do
   end
 
   describe '#log' do
+    let(:sink) { instance_double(Steno::Sink::Base) }
+    let(:logger) { Steno::Logger.new('test', [sink]) }
+
+    before do
+      allow(sink).to receive(:add_record)
+    end
+
     it 'does not forward any messages for levels that are inactive' do
-      sink = double('sink')
-      expect(sink).not_to receive(:add_record)
+      logger.debug('test')
 
-      my_logger = Steno::Logger.new('test', [sink])
-
-      my_logger.debug('test')
+      expect(sink).not_to have_received(:add_record)
     end
 
     it 'forwards messages for levels that are active' do
-      sink = double('sink')
-      expect(sink).to receive(:add_record).with(any_args)
+      logger.warn('test')
 
-      my_logger = Steno::Logger.new('test', [sink])
-
-      my_logger.warn('test')
+      expect(sink).to have_received(:add_record).with(any_args)
     end
 
     it 'does not invoke a supplied block if the level is inactive' do
@@ -74,13 +75,70 @@ describe Steno::Logger do
     end
 
     it 'creates a record with the proper level' do
-      sink = double('sink')
       expect(Steno::Record).to receive(:new).with('test', :warn, 'message', anything, anything).and_call_original
-      allow(sink).to receive(:add_record)
 
-      my_logger = Steno::Logger.new('test', [sink])
+      logger.warn('message')
+    end
 
-      my_logger.warn('message')
+    it 'includes the location where the record was generated' do
+      location = [__FILE__, an_instance_of(Integer), 'log']
+      expect(Steno::Record).to receive(:new).with('test', :warn, 'message', location, anything).and_call_original
+
+      def log(logger)
+        logger.warn('message')
+      end
+
+      log(logger)
+    end
+
+    describe 'option :ignored_locations' do
+      let(:logger) { Steno::Logger.new('test', [sink], ignored_locations: ignored_locations) }
+      let(:callstack) do
+        [
+          '/path/to/lib/steno/logger.rb:12:in `block in define_log_method`',
+          '/path/to/another_file.rb:34:in `yet_another_method`',
+          '/path/to/some_file.rb:56:in `another_method`',
+          '/path/to/some_file.rb:78:in `some_method`',
+          '/path/to/program.rb:90:in `<main>'
+        ]
+      end
+
+      before do
+        allow(Kernel).to receive(:caller).and_return(callstack)
+      end
+
+      context 'when ignoring a file' do
+        let(:ignored_locations) { /another_file\.rb/ }
+
+        it 'includes the next file as location' do
+          location = ['/path/to/some_file.rb', 56, 'another_method']
+          expect(Steno::Record).to receive(:new).with('test', :warn, 'message', location, anything).and_call_original
+
+          logger.warn('message')
+        end
+      end
+
+      context 'when ignoring multiple files and methods' do
+        let(:ignored_locations) { /(another_file\.rb|some_file\.rb.*another_method)/ }
+
+        it 'includes the next file/method as location' do
+          location = ['/path/to/some_file.rb', 78, 'some_method']
+          expect(Steno::Record).to receive(:new).with('test', :warn, 'message', location, anything).and_call_original
+
+          logger.warn('message')
+        end
+      end
+
+      context 'when regex is too broad' do
+        let(:ignored_locations) { /.*/ }
+
+        it 'still includes a location (the last one) and does not fail' do
+          location = [an_instance_of(String), an_instance_of(Integer), an_instance_of(String)]
+          expect(Steno::Record).to receive(:new).with('test', :warn, 'message', location, anything).and_call_original
+
+          logger.warn('message')
+        end
+      end
     end
   end
 

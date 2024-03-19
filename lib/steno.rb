@@ -47,7 +47,8 @@ module Steno
 
           logger = Steno::Logger.new(name, @config.sinks,
                                      level: level,
-                                     context: @config.context)
+                                     context: @config.context,
+                                     ignored_locations: @config.ignored_locations)
 
           @loggers[name] = logger
         end
