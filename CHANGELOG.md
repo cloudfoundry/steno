@@ -8,15 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- Updated Ruby version requirement to 2.7+
+- Updated Ruby version requirement to 3.0+ (dropped Ruby 2.7 support)
 - Updated development dependencies to latest versions
 - Added GitHub Actions for CI/CD
+- CI now tests all Ruby versions independently (fail-fast: false)
 
 ### Added
-- Automated testing on multiple Ruby versions (2.7, 3.0, 3.1, 3.2, 3.3)
+- Automated testing on multiple Ruby versions (3.0, 3.1, 3.2, 3.3, 3.4)
+- Ruby 3.4 compatibility: added syslog and syslog-logger gem dependencies for non-Windows platforms
 - Dependabot configuration for automated dependency updates
 - GitHub Actions release workflow for automatic gem publishing
 - Release documentation (RELEASING.md)
+
+### Fixed
+- Multiple RuboCop violations
+- Code quality improvements (frozen constants, removed redundant requires)
 
 ## [Previous versions history would go here]
 
