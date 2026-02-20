@@ -2,7 +2,7 @@ unless Steno::Sink::WINDOWS
   require 'steno/sink/base'
 
   require 'singleton'
-  require 'syslog/logger'
+  require 'syslog'
 
   class Steno::Sink::Syslog < Steno::Sink::Base
     include Singleton
@@ -29,9 +29,7 @@ unless Steno::Sink::WINDOWS
 
     def open(identity)
       @identity = identity
-
-      Syslog::Logger.new(@identity)
-      @syslog = Syslog::Logger.syslog
+      @syslog = Syslog.open(@identity, Syslog::LOG_PID | Syslog::LOG_CONS)
     end
 
     def add_record(record)

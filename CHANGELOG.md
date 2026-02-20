@@ -12,10 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated development dependencies to latest versions
 - Added GitHub Actions for CI/CD
 - CI now tests all Ruby versions independently (fail-fast: false)
+- Refactored syslog sink to use syslog gem directly instead of unmaintained syslog-logger
 
 ### Added
 - Automated testing on multiple Ruby versions (3.0, 3.1, 3.2, 3.3, 3.4)
-- Ruby 3.4 compatibility: added syslog and syslog-logger gem dependencies for non-Windows platforms
+- Ruby 3.4 compatibility: added syslog gem dependency for non-Windows platforms
 - Dependabot configuration for automated dependency updates
 - GitHub Actions release workflow for automatic gem publishing
 - Release documentation (RELEASING.md)

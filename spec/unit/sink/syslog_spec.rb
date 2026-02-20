@@ -16,7 +16,7 @@ unless Steno::Sink::WINDOWS
 
     describe '#add_record' do
       after do
-        Syslog::Logger.syslog = nil
+        Syslog.close if Syslog.opened?
       end
 
       it 'appends an encoded record with the correct priority' do

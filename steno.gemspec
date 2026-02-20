@@ -34,10 +34,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency('rubocop-rake', '~> 0.6')
   gem.add_development_dependency('rubocop-rspec', '~> 3.0')
 
-  unless RUBY_PLATFORM =~ /mswin|mingw|cygwin/
-    gem.add_dependency('syslog')
-    gem.add_dependency('syslog-logger')
-  end
+  gem.add_dependency('syslog') unless RUBY_PLATFORM =~ /mswin|mingw|cygwin/
 
   if RUBY_PLATFORM =~ /mswin|mingw|cygwin/
     gem.platform = Gem::Platform::CURRENT
