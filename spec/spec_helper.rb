@@ -1,4 +1,3 @@
-require 'rack/test'
 require 'rspec'
 
 require 'steno'

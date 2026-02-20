@@ -1,4 +1,5 @@
 require 'yajl'
+require 'time'
 
 require 'steno/codec/base'
 
