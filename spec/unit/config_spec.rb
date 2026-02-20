@@ -23,7 +23,7 @@ describe Steno::Config do
       end
 
       after do
-        @config = Steno::Config.from_hash(@hash)
+        @config = described_class.from_hash(@hash)
 
         expect(@config.default_log_level).to eq(:debug2)
         expect(@config.context.class).to eq(Steno::Context::Null)
@@ -72,7 +72,7 @@ describe Steno::Config do
       end
 
       after do
-        @config = Steno::Config.from_hash(@hash)
+        @config = described_class.from_hash(@hash)
 
         expect(@config.default_log_level).to eq(:debug2)
         expect(@config.context.class).to eq(Steno::Context::Null)
@@ -118,7 +118,7 @@ describe Steno::Config do
     it 'returns Steno::Config instance with sane defaults' do
       write_config(@config_path, {})
 
-      config = Steno::Config.from_file(@config_path)
+      config = described_class.from_file(@config_path)
 
       expect(config.sinks.size).to eq(1)
       expect(config.sinks[0].class).to eq(Steno::Sink::IO)
@@ -128,28 +128,28 @@ describe Steno::Config do
       expect(config.context.class).to eq(Steno::Context::Null)
 
       expect(config.codec.class).to eq(Steno::Codec::Json)
-      expect(config.codec.iso8601_timestamps?).to eq(false)
+      expect(config.codec.iso8601_timestamps?).to be(false)
     end
 
     it 'configures json codec with readable dates if iso8601_timestamps is true' do
       write_config(@config_path, { 'iso8601_timestamps' => 'true' })
-      config = Steno::Config.from_file(@config_path)
+      config = described_class.from_file(@config_path)
       expect(config.codec.class).to eq(Steno::Codec::Json)
-      expect(config.codec.iso8601_timestamps?).to eq(true)
+      expect(config.codec.iso8601_timestamps?).to be(true)
     end
 
     it 'sets the default_log_level if a key with the same name is supplied' do
       write_config(@config_path, { 'level' => 'debug2' })
-      expect(Steno::Config.from_file(@config_path).default_log_level).to eq(:debug2)
+      expect(described_class.from_file(@config_path).default_log_level).to eq(:debug2)
 
       write_config(@config_path, { 'default_log_level' => 'debug2' })
-      expect(Steno::Config.from_file(@config_path).default_log_level).to eq(:debug2)
+      expect(described_class.from_file(@config_path).default_log_level).to eq(:debug2)
     end
 
     it "reads the 'level' key if both default_log_level and level are spscified" do
       write_config(@config_path, { 'level' => 'debug2',
                                    'default_log_level' => 'warn' })
-      expect(Steno::Config.from_file(@config_path).default_log_level).to eq(:debug2)
+      expect(described_class.from_file(@config_path).default_log_level).to eq(:debug2)
     end
 
     it "adds a file sink if the 'file' key is specified" do
@@ -159,7 +159,7 @@ describe Steno::Config do
 
       expect(Steno::Sink::IO).to receive(:for_file)
         .with(@log_path, max_retries: 2).and_return(mock_sink)
-      config = Steno::Config.from_file(@config_path)
+      config = described_class.from_file(@config_path)
       expect(config.sinks.size).to eq(1)
       expect(config.sinks[0]).to eq(mock_sink)
     end
@@ -173,7 +173,7 @@ describe Steno::Config do
 
         expect(Steno::Sink::Eventlog).to receive(:instance).twice.and_return(mock_sink)
 
-        config = Steno::Config.from_file(@config_path)
+        config = described_class.from_file(@config_path)
         expect(config.sinks.size).to eq(1)
         expect(config.sinks[0]).to eq(mock_sink)
       end
@@ -186,7 +186,7 @@ describe Steno::Config do
 
         expect(Steno::Sink::Syslog).to receive(:instance).twice.and_return(mock_sink)
 
-        config = Steno::Config.from_file(@config_path)
+        config = described_class.from_file(@config_path)
         expect(config.sinks.size).to eq(1)
         expect(config.sinks[0]).to eq(mock_sink)
       end
@@ -197,9 +197,9 @@ describe Steno::Config do
       mock_sink = double('sink')
       expect(mock_sink).to receive(:codec=)
 
-      expect(Steno::Sink::IO).to receive(:new).with(STDOUT).and_return(mock_sink)
+      expect(Steno::Sink::IO).to receive(:new).with($stdout).and_return(mock_sink)
 
-      config = Steno::Config.from_file(@config_path)
+      config = described_class.from_file(@config_path)
       expect(config.sinks.size).to eq(1)
       expect(config.sinks[0]).to eq(mock_sink)
     end
@@ -208,9 +208,9 @@ describe Steno::Config do
       write_config(@config_path, { 'default_log_level' => 'debug' })
 
       context = Steno::Context::ThreadLocal.new
-      config = Steno::Config.from_file(@config_path,
-                                       default_log_level: 'warn',
-                                       context: context)
+      config = described_class.from_file(@config_path,
+                                         default_log_level: 'warn',
+                                         context: context)
       expect(config.context).to eq(context)
       expect(config.default_log_level).to eq(:warn)
     end

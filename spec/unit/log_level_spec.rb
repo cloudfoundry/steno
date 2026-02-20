@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Steno::LogLevel do
-  let(:info_level) { Steno::LogLevel.new(:info, 2) }
-  let(:debug_level) { Steno::LogLevel.new(:debug, 1) }
+  let(:info_level) { described_class.new(:info, 2) }
+  let(:debug_level) { described_class.new(:debug, 1) }
 
   it 'is comparable' do
     expect(info_level > debug_level).to be_truthy

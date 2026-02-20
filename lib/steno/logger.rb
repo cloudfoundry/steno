@@ -1,5 +1,3 @@
-require 'thread'
-
 require 'steno/errors'
 require 'steno/log_level'
 
@@ -17,7 +15,7 @@ class Steno::Logger
     debug1: Steno::LogLevel.new(:debug1, 17),
     debug2: Steno::LogLevel.new(:debug2, 18),
     all: Steno::LogLevel.new(:all, 30)
-  }
+  }.freeze
 
   class << self
     # The following helpers are used to create a new scope for binding the log
@@ -28,17 +26,17 @@ class Steno::Logger
     end
 
     def define_logf_method(name)
-      define_method(name.to_s + 'f') { |fmt, *args| log(name, fmt % args) }
+      define_method("#{name}f") { |fmt, *args| log(name, fmt % args) }
     end
 
     def define_level_active_predicate(name)
-      define_method(name.to_s + '?') { level_active?(name) }
+      define_method("#{name}?") { level_active?(name) }
     end
 
     def lookup_level(name)
       level = LEVELS[name]
 
-      raise Steno::Error.new("Unknown level: #{name}") if level.nil?
+      raise Steno::Error, "Unknown level: #{name}" if level.nil?
 
       level
     end
@@ -46,7 +44,7 @@ class Steno::Logger
 
   # This is magic, however, it's vastly simpler than declaring each method
   # manually.
-  LEVELS.each do |name, _|
+  LEVELS.each_key do |name|
     # Define #debug, for example
     define_log_method(name)
 

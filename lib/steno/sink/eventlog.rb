@@ -2,7 +2,6 @@ if Steno::Sink::WINDOWS
   require 'steno/sink/base'
 
   require 'singleton'
-  require 'thread'
   require 'win32/eventlog'
 
   class Steno::Sink::Eventlog < Steno::Sink::Base
@@ -16,7 +15,7 @@ if Steno::Sink::WINDOWS
       debug: Win32::EventLog::INFO_TYPE,
       debug1: Win32::EventLog::INFO_TYPE,
       debug2: Win32::EventLog::INFO_TYPE
-    }
+    }.freeze
 
     def initialize
       super

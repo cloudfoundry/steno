@@ -2,14 +2,13 @@ unless Steno::Sink::WINDOWS
   require 'steno/sink/base'
 
   require 'singleton'
-  require 'thread'
   require 'syslog/logger'
 
   class Steno::Sink::Syslog < Steno::Sink::Base
     include Singleton
 
     MAX_MESSAGE_SIZE = 1024 * 3
-    TRUNCATE_POSTFIX = '...'
+    TRUNCATE_POSTFIX = '...'.freeze
 
     LOG_LEVEL_MAP = {
       fatal: Syslog::LOG_CRIT,
@@ -19,7 +18,7 @@ unless Steno::Sink::WINDOWS
       debug: Syslog::LOG_DEBUG,
       debug1: Syslog::LOG_DEBUG,
       debug2: Syslog::LOG_DEBUG
-    }
+    }.freeze
 
     def initialize
       super

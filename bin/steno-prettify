@@ -21,7 +21,7 @@ def prettify_io(io, prettifier, ignore_parse_error = false)
 
       prettified = prettifier.prettify_line(json)
       print prefix + prettified
-    rescue Steno::JsonPrettifier::ParseError => e
+    rescue Steno::JsonPrettifier::ParseError
       if ignore_parse_error
         print line
       else
@@ -43,14 +43,14 @@ def prettify_file(path, prettifier, ignore_parse_error = false)
 
   prettify_io(f, prettifier, ignore_parse_error)
 ensure
-  f.close if f
+  f&.close
 end
 
 excluded_fields = []
 ignore_parse_error = false
 
 option_parser = OptionParser.new do |op|
-  op.banner = <<~EOT
+  op.banner = <<~USAGE
     Usage: steno-prettify [OPTS] [FILE...]
 
     Parses json formatted log lines from FILE(s), or stdin,
@@ -65,7 +65,7 @@ option_parser = OptionParser.new do |op|
         Prettify contents of stdin.
 
     Options:
-  EOT
+  USAGE
 
   op.on('-h', '--help', 'Display help') do
     puts op
@@ -83,7 +83,7 @@ end
 
 option_parser.parse!(ARGV)
 
-STDOUT.sync = true
+$stdout.sync = true
 prettifier = Steno::JsonPrettifier.new(excluded_fields)
 
 inputs = ARGV.dup
@@ -91,7 +91,7 @@ inputs << '-' if inputs.empty?
 
 inputs.each do |path|
   if path == '-'
-    prettify_io(STDIN, prettifier, ignore_parse_error)
+    prettify_io($stdin, prettifier, ignore_parse_error)
   else
     prettify_file(path, prettifier, ignore_parse_error)
   end

@@ -1,5 +1,4 @@
 require 'rbconfig'
-require 'thread'
 
 module Steno
   module Sink

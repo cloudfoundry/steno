@@ -17,11 +17,11 @@ class Steno::TaggedLogger
     end
 
     def define_logf_method(name)
-      define_method(name.to_s + 'f') { |fmt, *args| log(name, fmt % args) }
+      define_method("#{name}f") { |fmt, *args| log(name, fmt % args) }
     end
   end
 
-  Steno::Logger::LEVELS.each do |name, _|
+  Steno::Logger::LEVELS.each_key do |name|
     # Define #debug, for example
     define_log_method(name)
 
@@ -34,8 +34,12 @@ class Steno::TaggedLogger
     @user_data = user_data
   end
 
-  def method_missing(method, *args, &blk)
-    @proxied_logger.send(method, *args, &blk)
+  def method_missing(method, ...)
+    @proxied_logger.send(method, ...)
+  end
+
+  def respond_to_missing?(method, include_private = false)
+    @proxied_logger.respond_to?(method, include_private) || super
   end
 
   # @see Steno::Logger#log

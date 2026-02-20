@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Steno::Record do
   let(:message) { Array('test message') }
-  let(:record) { Steno::Record.new('test', :info, message) }
+  let(:record) { described_class.new('test', :info, message) }
 
   it 'sets the process id' do
     expect(record.process_id).to eq(Process.pid)

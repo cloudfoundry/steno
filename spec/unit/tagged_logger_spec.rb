@@ -4,7 +4,7 @@ describe Steno::TaggedLogger do
   let(:sink) { NullSink.new }
   let(:logger) { Steno::Logger.new('test', [sink]) }
   let(:user_data) { { 'foo' => 'bar' } }
-  let(:tagged_logger) { Steno::TaggedLogger.new(logger, user_data) }
+  let(:tagged_logger) { described_class.new(logger, user_data) }
 
   it 'adds any user data to each log record' do
     tagged_logger.info('testing', 'test' => 'data')
@@ -22,7 +22,7 @@ describe Steno::TaggedLogger do
 
     expect(logger.level).to eq(:warn)
 
-    expect(tagged_logger.level_active?(:info)).to be_falsey
+    expect(tagged_logger).not_to be_level_active(:info)
   end
 
   describe '#tag' do

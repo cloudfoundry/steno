@@ -1,5 +1,3 @@
-require 'thread'
-
 class Barrier
   def initialize
     @lock = Mutex.new

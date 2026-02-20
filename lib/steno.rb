@@ -1,5 +1,3 @@
-require 'thread'
-
 require 'steno/codec'
 require 'steno/config'
 require 'steno/context'

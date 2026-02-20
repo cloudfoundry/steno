@@ -26,7 +26,7 @@ class Steno::Sink::Counter < Steno::Sink::Base
   def to_json(*_args)
     hash = {}
     @mutex.synchronize do
-      Steno::Logger::LEVELS.keys.each do |level_name|
+      Steno::Logger::LEVELS.each_key do |level_name|
         hash[level_name] = @counts.fetch(level_name.to_s, 0)
       end
     end

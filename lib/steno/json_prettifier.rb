@@ -16,7 +16,7 @@ class Steno::JsonPrettifier
     data
     log_level
     message
-  ]
+  ].freeze
 
   MIN_COL_WIDTH = 14
 
@@ -49,11 +49,11 @@ class Steno::JsonPrettifier
       next if @excluded_fields.include?(field_name)
 
       exists = nil
-      pred_meth = :"check_#{field_name}"
+      pred_meth = :"#{field_name}?"
       if respond_to?(pred_meth, true)
         exists = send(pred_meth, record)
-      elsif record.respond_to?(:has_key?)
-        exists = record.has_key?(field_name)
+      elsif record.respond_to?(:key?)
+        exists = record.key?(field_name)
       else
         msg = "Expected the record to be a hash, but received: #{record.class}."
         raise ParseError, msg
@@ -66,7 +66,7 @@ class Steno::JsonPrettifier
                 end
     end
 
-    fields.join(' ') + "\n"
+    "#{fields.join(' ')}\n"
   end
 
   def format_timestamp(record)
@@ -90,14 +90,13 @@ class Steno::JsonPrettifier
     format('fid=%s', shortid(record['fiber_id']))
   end
 
-  def check_location(record)
-    %w[file lineno method].reduce(true) { |ok, k| ok && record.has_key?(k) }
+  def location?(record)
+    %w[file lineno method].reduce(true) { |ok, k| ok && record.key?(k) }
   end
 
   def format_location(record)
     parts = record['file'].split('/')
 
-    trimmed_filename = nil
     trimmed_filename = if parts.size == 1
                          parts[0]
                        else
@@ -107,7 +106,7 @@ class Steno::JsonPrettifier
     format('%s/%s:%s', trimmed_filename, record['method'], record['lineno'])
   end
 
-  def check_data(record)
+  def data?(record)
     record['data'].is_a?(Hash)
   end
 

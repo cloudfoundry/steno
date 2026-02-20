@@ -1,29 +1,29 @@
 require 'spec_helper'
 
 describe Steno::Logger do
-  let(:logger) { Steno::Logger.new('test', []) }
+  let(:logger) { described_class.new('test', []) }
 
   it 'provides #level, #levelf, and #level? methods for each log level' do
-    Steno::Logger::LEVELS.each do |name, _|
-      [name, name.to_s + 'f', name.to_s + '?'].each do |meth|
-        expect(logger.respond_to?(meth)).to be_truthy
+    Steno::Logger::LEVELS.each_key do |name|
+      [name, "#{name}f", "#{name}?"].each do |meth|
+        expect(logger).to respond_to(meth)
       end
     end
   end
 
   describe '#level_active?' do
     it 'returns a boolean indicating if the level is enabled' do
-      expect(logger.level_active?(:error)).to be_truthy
-      expect(logger.level_active?(:info)).to be_truthy
-      expect(logger.level_active?(:debug)).to be_falsey
+      expect(logger).to be_level_active(:error)
+      expect(logger).to be_level_active(:info)
+      expect(logger).not_to be_level_active(:debug)
     end
   end
 
   describe '#<level>?' do
     it 'returns a boolean indiciating if <level> is enabled' do
-      expect(logger.error?).to be_truthy
-      expect(logger.info?).to be_truthy
-      expect(logger.debug?).to be_falsey
+      expect(logger).to be_error
+      expect(logger).to be_info
+      expect(logger).not_to be_debug
     end
   end
 
@@ -37,8 +37,8 @@ describe Steno::Logger do
     it 'allows the level to be changed' do
       logger.level = :warn
       expect(logger.level).to eq(:warn)
-      expect(logger.level_active?(:info)).to be_falsey
-      expect(logger.level_active?(:warn)).to be_truthy
+      expect(logger).not_to be_level_active(:info)
+      expect(logger).to be_level_active(:warn)
     end
   end
 
@@ -47,7 +47,7 @@ describe Steno::Logger do
       sink = double('sink')
       expect(sink).not_to receive(:add_record)
 
-      my_logger = Steno::Logger.new('test', [sink])
+      my_logger = described_class.new('test', [sink])
 
       my_logger.debug('test')
     end
@@ -56,7 +56,7 @@ describe Steno::Logger do
       sink = double('sink')
       expect(sink).to receive(:add_record).with(any_args)
 
-      my_logger = Steno::Logger.new('test', [sink])
+      my_logger = described_class.new('test', [sink])
 
       my_logger.warn('test')
     end
@@ -78,7 +78,7 @@ describe Steno::Logger do
       expect(Steno::Record).to receive(:new).with('test', :warn, 'message', anything, anything).and_call_original
       allow(sink).to receive(:add_record)
 
-      my_logger = Steno::Logger.new('test', [sink])
+      my_logger = described_class.new('test', [sink])
 
       my_logger.warn('message')
     end

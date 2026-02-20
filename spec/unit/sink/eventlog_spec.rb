@@ -16,7 +16,7 @@ if Steno::Sink::WINDOWS
                        .with('Application')
                        .and_return(eventlog)
 
-        sink = Steno::Sink::Eventlog.instance
+        sink = described_class.instance
         sink.open
 
         codec = double('codec')
@@ -33,7 +33,7 @@ if Steno::Sink::WINDOWS
 
     describe '#flush' do
       it 'does nothing' do
-        Steno::Sink::Eventlog.instance.flush
+        described_class.instance.flush
       end
     end
   end

@@ -60,13 +60,13 @@ class Steno::Config
 
       opts[:sinks] << Steno::Sink::Fluentd.new(hash[:fluentd]) if hash[:fluentd]
 
-      opts[:sinks] << Steno::Sink::IO.new(STDOUT) if opts[:sinks].empty?
+      opts[:sinks] << Steno::Sink::IO.new($stdout) if opts[:sinks].empty?
 
       opts
     end
 
     def symbolize_keys(hash)
-      Hash[hash.each_pair.map { |k, v| [k.to_sym, v] }]
+      hash.transform_keys(&:to_sym)
     end
   end
 

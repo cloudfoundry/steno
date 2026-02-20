@@ -1,5 +1,4 @@
 require 'fiber'
-require 'thread'
 
 class Fiber
   def __steno_context_data__
@@ -36,7 +35,7 @@ module Steno::Context
   end
 
   class ThreadLocal < Base
-    THREAD_LOCAL_KEY = '__steno_locals__'
+    THREAD_LOCAL_KEY = '__steno_locals__'.freeze
 
     def data
       Thread.current[THREAD_LOCAL_KEY] ||= {}

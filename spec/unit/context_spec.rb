@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Steno::Context::Null do
   include_context 'steno context'
 
-  let(:context) { Steno::Context::Null.new }
+  let(:context) { described_class.new }
 
   it 'stores no data' do
     expect(context.data).to eq({})
@@ -15,7 +15,7 @@ end
 describe Steno::Context::ThreadLocal do
   include_context 'steno context'
 
-  let(:context) { Steno::Context::ThreadLocal.new }
+  let(:context) { described_class.new }
 
   it 'stores data local to threads' do
     b1 = Barrier.new
@@ -43,7 +43,7 @@ end
 describe Steno::Context::FiberLocal do
   include_context 'steno context'
 
-  let(:context) { Steno::Context::FiberLocal.new }
+  let(:context) { described_class.new }
 
   it 'stores data local to fibers' do
     f2 = Fiber.new do

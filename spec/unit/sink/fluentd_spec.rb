@@ -16,7 +16,7 @@ describe Steno::Sink::IO do
                                                                    port: 24_224,
                                                                    buffer_limit: Fluent::Logger::FluentLogger::BUFFER_LIMIT
                                                                  }).and_return(nil)
-      sink = Steno::Sink::Fluentd.new
+      Steno::Sink::Fluentd.new
     end
 
     it 'initializes FliuentLogger with override options' do
@@ -25,12 +25,12 @@ describe Steno::Sink::IO do
                                                                    port: 8080,
                                                                    buffer_limit: 1024
                                                                  }).and_return(nil)
-      sink = Steno::Sink::Fluentd.new({
-                                        tag_prefix: 'vcap',
-                                        host: 'localhost',
-                                        port: 8080,
-                                        buffer_limit: 1024
-                                      })
+      Steno::Sink::Fluentd.new({
+                                 tag_prefix: 'vcap',
+                                 host: 'localhost',
+                                 port: 8080,
+                                 buffer_limit: 1024
+                               })
     end
   end
 

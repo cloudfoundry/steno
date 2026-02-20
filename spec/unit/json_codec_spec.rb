@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Steno::Codec::Json do
-  let(:codec) { Steno::Codec::Json.new }
+  let(:codec) { described_class.new }
   let(:record) { make_record(data: { 'user' => 'data' }) }
 
   describe '#encode_record' do
@@ -38,11 +38,11 @@ describe Steno::Codec::Json do
     end
 
     it 'does not use readable dates by default' do
-      expect(codec.iso8601_timestamps?).to eq(false)
+      expect(codec.iso8601_timestamps?).to be(false)
     end
 
     context 'when iso8601_timestamps is set' do
-      let(:codec) { Steno::Codec::Json.new(iso8601_timestamps: true) }
+      let(:codec) { described_class.new(iso8601_timestamps: true) }
 
       it 'encodes timestamps as UTC-formatted strings' do
         allow(record).to receive(:timestamp).and_return 1_396_473_763.811278 # 2014-04-02 22:22:43 +01:00
@@ -53,7 +53,7 @@ describe Steno::Codec::Json do
       end
 
       it 'surfaces the property in a getter' do
-        expect(codec.iso8601_timestamps?).to eq(true)
+        expect(codec.iso8601_timestamps?).to be(true)
       end
     end
   end

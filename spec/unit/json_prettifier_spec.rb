@@ -3,7 +3,7 @@ require 'spec_helper'
 require 'steno/json_prettifier'
 
 describe Steno::JsonPrettifier do
-  let(:prettifier) { Steno::JsonPrettifier.new }
+  let(:prettifier) { described_class.new }
   let(:codec) { Steno::Codec::Json.new }
 
   describe '#prettify_line' do
@@ -23,8 +23,7 @@ describe Steno::JsonPrettifier do
                    'test=data',                # User supplied data
                    'INFO',                     # Level
                    '--',
-                   'message' # Log message
-                   ].join("\s+") + "\n"
+                   'message'].join("\s+") << "\n" # Log message
       expect(prettified).to match(exp_regex)
     end
 
@@ -44,8 +43,7 @@ describe Steno::JsonPrettifier do
                '\d{2}:\d{2}:\d{2}\.\d{6}', # HH:MM:SS.uS
                '([a-zA-Z0-9\ ]+)',         # Source (to be captured)
                'pid=\d+',                  # Process id
-               '.+'                        # Everything else
-      ].join("\s") + "\n"
+               '.+'].join("\s") << "\n"    # Everything else
 
       max_src_len = Steno::JsonPrettifier::MIN_COL_WIDTH
       test_srcs.each do |src|

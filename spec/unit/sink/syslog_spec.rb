@@ -25,7 +25,7 @@ unless Steno::Sink::WINDOWS
         syslog = double('syslog', facility: nil)
         expect(Syslog).to receive(:open).and_return(syslog)
 
-        sink = Steno::Sink::Syslog.instance
+        sink = described_class.instance
         sink.open(identity)
 
         codec = double('codec')
@@ -43,11 +43,11 @@ unless Steno::Sink::WINDOWS
         syslog = double('syslog', facility: nil)
         expect(Syslog).to receive(:open).and_return(syslog)
 
-        sink = Steno::Sink::Syslog.instance
+        sink = described_class.instance
         sink.open(identity)
 
         truncated = record_with_big_message.message
-                                           .slice(0..Steno::Sink::Syslog::MAX_MESSAGE_SIZE - 4)
+                                           .slice(0..(Steno::Sink::Syslog::MAX_MESSAGE_SIZE - 4))
         truncated << Steno::Sink::Syslog::TRUNCATE_POSTFIX
         codec = double('codec')
         expect(codec).to receive(:encode_record) do |*args|
@@ -76,7 +76,7 @@ unless Steno::Sink::WINDOWS
           syslog = double('syslog', facility: nil, log: nil)
           expect(Syslog).to receive(:open).and_return(syslog)
 
-          sink = Steno::Sink::Syslog.instance
+          sink = described_class.instance
           sink.open(identity)
 
           codec = double('codec', encode_record: nil)
@@ -92,7 +92,7 @@ unless Steno::Sink::WINDOWS
 
     describe '#flush' do
       it 'does nothing' do
-        Steno::Sink::Syslog.instance.flush
+        described_class.instance.flush
       end
     end
   end
