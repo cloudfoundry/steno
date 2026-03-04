@@ -1,3 +1,5 @@
+**:warning:Steno is no longer maintained and archived:warning:**
+
 # Steno
 Steno is a lightweight, modular logging library written specifically to support
 Cloud Foundry.
